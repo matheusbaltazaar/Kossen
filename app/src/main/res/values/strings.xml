@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Kossen</string>
+    <string name="all_button_stop">PARAR</string>
+    <string name="all_button_start">INICIAR</string>
+    <string name="tv_clock_label_placeholder">00:00:00</string>
+    <string name="all_menu_action_restart">Reiniciar</string>
+    <string name="all_menu_action_history">Histórico de Daimoku</string>
+    <string name="all_label_meta">Meta:</string>
+    <string name="all_label_time_choose_placeholder">00</string>
+    <string name="all_button_resume">CONTINUAR</string>
+    <string name="title_activity_sound_choose">Escolha um toque</string>
+    <string name="all_label_sounds_section_default">Padrão</string>
+    <string name="all_label_sounds_section_melodies">Melodias</string>
+    <string name="all_menu_action_sound">Mudar toque</string>
+</resources>
