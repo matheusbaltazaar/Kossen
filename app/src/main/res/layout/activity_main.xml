@@ -6,7 +6,7 @@
     android:background="@color/green"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".MainActivity"
+    tools:context=".ui.MainActivity"
     tools:ignore="ContentDescription">
 
 

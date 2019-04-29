@@ -1,4 +1,4 @@
-package com.baltazarstudio.kossen;
+package com.baltazarstudio.kossen.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.baltazarstudio.kossen.R;
 
 import java.util.Timer;
 import java.util.TimerTask;

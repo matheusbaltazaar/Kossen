@@ -1,4 +1,4 @@
-package com.baltazarstudio.kossen;
+package com.baltazarstudio.kossen.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +8,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.baltazarstudio.kossen.R;
 import com.baltazarstudio.kossen.adapter.ListSoundAdapter;
 
 public class SoundChooseActivity extends AppCompatActivity {

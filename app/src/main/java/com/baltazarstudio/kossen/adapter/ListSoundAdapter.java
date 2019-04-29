@@ -10,7 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.baltazarstudio.kossen.MainActivity;
+import com.baltazarstudio.kossen.ui.MainActivity;
 import com.baltazarstudio.kossen.R;
 
 import java.util.ArrayList;
