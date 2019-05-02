@@ -1,6 +1,5 @@
 package com.baltazarstudio.kossen.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
@@ -10,10 +9,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.baltazarstudio.kossen.ui.MainActivity;
 import com.baltazarstudio.kossen.R;
+import com.baltazarstudio.kossen.context.AppContext;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ListSoundAdapter extends BaseAdapter {
 
@@ -27,7 +27,7 @@ public class ListSoundAdapter extends BaseAdapter {
 
     public ListSoundAdapter(Context context, int soundGroup) {
         this.context = context;
-        preferences = context.getSharedPreferences(MainActivity.PREFS, Context.MODE_PRIVATE);
+        preferences = context.getSharedPreferences(AppContext.PREFS, Context.MODE_PRIVATE);
         initializeSoundList(soundGroup);
     }
 
@@ -44,6 +44,8 @@ public class ListSoundAdapter extends BaseAdapter {
             soundList.add(new SoundMapObject("Magical Morning", R.raw.magical_morning));
             soundList.add(new SoundMapObject("Light Ringtone", R.raw.light_ringtone));
         }
+
+        Collections.sort(soundList);
     }
 
     @Override
@@ -63,14 +65,13 @@ public class ListSoundAdapter extends BaseAdapter {
     }
 
     @Override
-    @SuppressLint("ViewHolder")
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.sound_list_item, parent);
+        View view = LayoutInflater.from(context).inflate(R.layout.sound_list_item, null);
 
         ((TextView) view.findViewById(R.id.tv_sound_item_description)).setText(soundList.get(position).description);
 
         ImageView selected = view.findViewById(R.id.iv_sound_item_selected);
-        long targetSound = preferences.getInt(MainActivity.TARGET_SOUND, MainActivity.DEFAULT_SOUND);
+        long targetSound = preferences.getInt(AppContext.TARGET_SOUND, AppContext.DEFAULT_SOUND);
         if (getItemId(position) == targetSound) {
             selected.setVisibility(View.VISIBLE);
         } else {
@@ -80,21 +81,18 @@ public class ListSoundAdapter extends BaseAdapter {
         return view;
     }
 
-    public void updateTargetRing(int position) {
-        preferences.edit()
-                .putInt(MainActivity.TARGET_SOUND, (int) getItemId(position))
-                .apply();
-
-        notifyDataSetChanged();
-    }
-
-    private class SoundMapObject {
+    private class SoundMapObject implements Comparable<SoundMapObject> {
         String description;
         int resId;
 
         SoundMapObject(String description, int resId) {
             this.description = description;
             this.resId = resId;
+        }
+
+        @Override
+        public int compareTo(SoundMapObject other) {
+            return this.description.compareTo(other.description);
         }
     }
 }

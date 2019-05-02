@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.SoundChooseActivity"
+            android:name=".ui.SelectSoundActivity"
             android:label="@string/title_activity_sound_choose" />
         <activity android:name=".ui.MainActivity">
             <intent-filter>

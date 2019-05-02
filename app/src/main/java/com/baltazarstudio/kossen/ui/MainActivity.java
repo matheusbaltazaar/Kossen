@@ -17,15 +17,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baltazarstudio.kossen.R;
+import com.baltazarstudio.kossen.context.AppContext;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
-
-    public static final String PREFS = "preferences";
-    public static final String TARGET_SOUND = "target_sound";
-    public static final int DEFAULT_SOUND = R.raw.camila_cabello_havana;
     private Timer mainTimer;
     private TextView tvTimer;
     private boolean clockEnabled = false;
@@ -226,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void resumeClock() {
         mainTimer = new Timer();
-        mainTimer.scheduleAtFixedRate(initializerTimer(), 0, 1000);
+        mainTimer.scheduleAtFixedRate(initializeTimer(), 0, 1000);
         button.setText(R.string.all_button_stop);
     }
 
@@ -237,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
         clockEnabled = false;
     }
 
-    private TimerTask initializerTimer() {
+    private TimerTask initializeTimer() {
         return new TimerTask() {
             @Override
             public void run() {
@@ -307,9 +304,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void playDefinedSound() {
-        SharedPreferences preferences = getSharedPreferences(PREFS, MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences(AppContext.PREFS, MODE_PRIVATE);
 
-        final MediaPlayer mediaPlayer = MediaPlayer.create(this, preferences.getInt(TARGET_SOUND, DEFAULT_SOUND));
+        final MediaPlayer mediaPlayer = MediaPlayer.create(
+                this,
+                preferences.getInt(AppContext.TARGET_SOUND,
+                        AppContext.DEFAULT_SOUND));
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             int timesPlayed = 0;
 
@@ -348,7 +348,7 @@ public class MainActivity extends AppCompatActivity {
                     .setNegativeButton("Não", null)
                     .create().show();
         } else if (id == R.id.action_sound) {
-            startActivity(new Intent(this, SoundChooseActivity.class));
+            startActivity(new Intent(this, SelectSoundActivity.class));
         } else if (id == R.id.action_history) {
             // SHOW ACTIVITY DAIMOKU HISTORY
         }
