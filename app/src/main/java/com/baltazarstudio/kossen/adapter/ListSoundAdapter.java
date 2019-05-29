@@ -17,33 +17,21 @@ import java.util.Collections;
 
 public class ListSoundAdapter extends BaseAdapter {
 
-
-    public static final int DEFAULT = 0;
-    public static final int MELODIES = 1;
-
     private Context context;
     private SharedPreferences preferences;
     private ArrayList<SoundMapObject> soundList;
 
-    public ListSoundAdapter(Context context, int soundGroup) {
+    public ListSoundAdapter(Context context) {
         this.context = context;
         preferences = context.getSharedPreferences(AppContext.PREFS, Context.MODE_PRIVATE);
-        initializeSoundList(soundGroup);
+        initializeSoundList();
     }
 
-    private void initializeSoundList(int soundGroup) {
+    private void initializeSoundList() {
         soundList = new ArrayList<>();
-
-        if (soundGroup == DEFAULT) {
-            soundList.add(new SoundMapObject("Som 1", R.raw.sound_1));
-            soundList.add(new SoundMapObject("Som 2", R.raw.sound_2));
-            soundList.add(new SoundMapObject("Som 3", R.raw.sound_3));
-            soundList.add(new SoundMapObject("Som 4", R.raw.sound_4));
-        } else if (soundGroup == MELODIES) {
-            soundList.add(new SoundMapObject("Camila Cabello Havana", R.raw.camila_cabello_havana));
-            soundList.add(new SoundMapObject("Magical Morning", R.raw.magical_morning));
-            soundList.add(new SoundMapObject("Light Ringtone", R.raw.light_ringtone));
-        }
+        soundList.add(new SoundMapObject("Camila Cabello Havana", R.raw.camila_cabello_havana));
+        soundList.add(new SoundMapObject("Magical Morning", R.raw.magical_morning));
+        soundList.add(new SoundMapObject("Light Ringtone", R.raw.light_ringtone));
 
         Collections.sort(soundList);
     }
@@ -55,8 +43,7 @@ public class ListSoundAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        //return soundList.get(position);
-        return null;
+        return soundList.get(position);
     }
 
     @Override
@@ -71,7 +58,7 @@ public class ListSoundAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.tv_sound_item_description)).setText(soundList.get(position).description);
 
         ImageView selected = view.findViewById(R.id.iv_sound_item_selected);
-        long targetSound = preferences.getInt(AppContext.TARGET_SOUND, AppContext.DEFAULT_SOUND);
+        long targetSound = preferences.getInt(AppContext.DAIMOKU_GOAL_SOUND, AppContext.DEFAULT_DAIMOKU_GOAL_SOUND);
         if (getItemId(position) == targetSound) {
             selected.setVisibility(View.VISIBLE);
         } else {

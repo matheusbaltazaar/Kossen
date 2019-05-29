@@ -3,125 +3,139 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/green"
+    android:background="@drawable/activity_frame"
     android:gravity="center"
     android:orientation="vertical"
     tools:context=".ui.MainActivity"
     tools:ignore="ContentDescription">
 
 
+    <TextView
+        android:id="@+id/tv_goal_reached_message"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="@string/all_label_goal_reached"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:visibility="gone" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/all_label_meta"
+        android:textColor="@android:color/black"
+        android:textSize="24sp" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/all_label_meta"
-            android:textColor="@color/white"
-            android:textSize="30sp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:gravity="center"
+            android:orientation="vertical"
             android:padding="8dp">
 
             <ImageButton
                 android:id="@+id/button_increase_hour"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
                 android:layout_margin="4dp"
                 android:background="@drawable/all_circle_button"
+                android:padding="8dp"
                 android:src="@drawable/ic_add" />
 
             <TextView
                 android:id="@+id/lb_choose_hour"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="30sp"
-                android:padding="12dp"
-                android:background="@drawable/choosing_layout_background"/>
+                android:background="@drawable/square_border_background"
+                android:padding="8dp"
+                android:textSize="30sp" />
 
             <ImageButton
                 android:id="@+id/button_decrease_hour"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
                 android:layout_margin="4dp"
                 android:background="@drawable/all_circle_button"
+                android:padding="8dp"
                 android:src="@drawable/ic_subtract" />
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:gravity="center"
+            android:orientation="vertical"
             android:padding="8dp">
 
             <ImageButton
                 android:id="@+id/button_increase_minute"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
                 android:layout_margin="4dp"
                 android:background="@drawable/all_circle_button"
+                android:padding="8dp"
                 android:src="@drawable/ic_add" />
 
             <TextView
                 android:id="@+id/lb_choose_minute"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="30sp"
-                android:padding="12dp"
-                android:background="@drawable/choosing_layout_background"/>
+                android:background="@drawable/square_border_background"
+                android:padding="8dp"
+                android:textSize="30sp" />
 
             <ImageButton
                 android:id="@+id/button_decrease_minute"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
                 android:layout_margin="4dp"
                 android:background="@drawable/all_circle_button"
+                android:padding="8dp"
                 android:src="@drawable/ic_subtract" />
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:gravity="center"
+            android:orientation="vertical"
             android:padding="8dp">
 
             <ImageButton
                 android:id="@+id/button_increase_second"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
                 android:layout_margin="4dp"
                 android:background="@drawable/all_circle_button"
+                android:padding="8dp"
                 android:src="@drawable/ic_add" />
 
             <TextView
                 android:id="@+id/lb_choose_second"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="30sp"
-                android:padding="12dp"
-                android:background="@drawable/choosing_layout_background"/>
+                android:background="@drawable/square_border_background"
+                android:padding="8dp"
+                android:textSize="30sp" />
 
             <ImageButton
                 android:id="@+id/button_decrease_second"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
                 android:layout_margin="4dp"
                 android:background="@drawable/all_circle_button"
+                android:padding="8dp"
                 android:src="@drawable/ic_subtract" />
 
         </LinearLayout>
@@ -134,18 +148,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/tv_clock_label_placeholder"
-        android:textColor="@color/white"
+        android:textColor="@android:color/black"
         android:textSize="36sp" />
 
 
     <Button
         android:id="@+id/bt_start_stop_clock"
-        android:layout_width="match_parent"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:background="@drawable/all_rounded_button"
         android:text="@string/all_button_start"
+        android:textColor="@color/white"
         android:textSize="20sp" />
 
 

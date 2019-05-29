@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.baltazarstudio.kossen.R;
 import com.baltazarstudio.kossen.context.AppContext;
+import com.baltazarstudio.kossen.database.Database;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,14 +28,21 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvTimer;
     private boolean clockEnabled = false;
     private int totalSeconds = 0;
-    private Runnable clockLabelUpdateThread;
+    private Runnable updateUIThread;
     private Runnable targetReachedThread;
     private Button button;
     private TextView lblChooseHour;
     private TextView lblChooseMinute;
     private TextView lblChooseSecond;
-    private int totalTargetSeconds = 0;
-    private boolean isTargetReached = false;
+    private int totalGoalSeconds = 0;
+    private boolean isGoalReached = false;
+    private MenuItem restartMenuItem;
+    private ImageButton buttonDecreaseHour;
+    private ImageButton buttonDecreaseMinute;
+    private ImageButton buttonDecreaseSecond;
+    private ImageButton buttonIncreaseHour;
+    private ImageButton buttonIncreaseMinute;
+    private ImageButton buttonIncreaseSecond;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +56,6 @@ public class MainActivity extends AppCompatActivity {
                 clockEnabled = !clockEnabled;
 
                 if (clockEnabled) {
-                    if (totalSeconds == 0)
-                        defineTimeTarget();
                     resumeClock();
                 } else {
                     stopClock();
@@ -60,16 +66,10 @@ public class MainActivity extends AppCompatActivity {
         tvTimer = findViewById(R.id.tv_clock_counter);
 
         targetReachedThread = initializeTargetReachedThread(this);
-
-        clockLabelUpdateThread = new Runnable() {
-            @Override
-            public void run() {
-                tvTimer.setText(getFormattedTime());
-            }
-        };
+        updateUIThread = initializeUpdateUIThread();
 
 
-        final ImageButton buttonIncreaseHour = findViewById(R.id.button_increase_hour);
+        buttonIncreaseHour = findViewById(R.id.button_increase_hour);
         buttonIncreaseHour.setTag(R.id.button_increase_hour);
         buttonIncreaseHour.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,7 +77,9 @@ public class MainActivity extends AppCompatActivity {
                 increase(buttonIncreaseHour);
             }
         });
-        final ImageButton buttonDecreaseHour = findViewById(R.id.button_decrease_hour);
+
+
+        buttonDecreaseHour = findViewById(R.id.button_decrease_hour);
         buttonDecreaseHour.setTag(R.id.button_decrease_hour);
         buttonDecreaseHour.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,7 +87,8 @@ public class MainActivity extends AppCompatActivity {
                 decrease(buttonDecreaseHour);
             }
         });
-        final ImageButton buttonIncreaseMinute = findViewById(R.id.button_increase_minute);
+
+        buttonIncreaseMinute = findViewById(R.id.button_increase_minute);
         buttonIncreaseMinute.setTag(R.id.button_increase_minute);
         buttonIncreaseMinute.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,7 +96,8 @@ public class MainActivity extends AppCompatActivity {
                 increase(buttonIncreaseMinute);
             }
         });
-        final ImageButton buttonDecreaseMinute = findViewById(R.id.button_decrease_minute);
+
+        buttonDecreaseMinute = findViewById(R.id.button_decrease_minute);
         buttonDecreaseMinute.setTag(R.id.button_decrease_minute);
         buttonDecreaseMinute.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
                 decrease(buttonDecreaseMinute);
             }
         });
-        final ImageButton buttonIncreaseSecond = findViewById(R.id.button_increase_second);
+
+        buttonIncreaseSecond = findViewById(R.id.button_increase_second);
         buttonIncreaseSecond.setTag(R.id.button_increase_second);
         buttonIncreaseSecond.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +114,8 @@ public class MainActivity extends AppCompatActivity {
                 increase(buttonIncreaseSecond);
             }
         });
-        final ImageButton buttonDecreaseSecond = findViewById(R.id.button_decrease_second);
+
+        buttonDecreaseSecond = findViewById(R.id.button_decrease_second);
         buttonDecreaseSecond.setTag(R.id.button_decrease_second);
         buttonDecreaseSecond.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,16 +133,50 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private Runnable initializeUpdateUIThread() {
+        return new Runnable() {
+            @Override
+            public void run() {
+                if (isGoalReached) {
+                    button.setText(R.string.all_button_resume);
+                    toggleUIComponents(true);
+                } else {
+                    tvTimer.setText(formatLabelTimeString());
+                    restartMenuItem.setEnabled(false);
+                }
+            }
+        };
+    }
+
     private Runnable initializeTargetReachedThread(final Context context) {
         return new Runnable() {
             @Override
             public void run() {
-                isTargetReached = true;
-                playDefinedSound();
+                isGoalReached = true;
                 stopClock();
-                Toast.makeText(context, "FINALIZADO", Toast.LENGTH_LONG).show();
+                playSound();
+                updateUI();
+                Toast.makeText(context, AppContext.getCurrentDateTime(), Toast.LENGTH_LONG).show();
+
+                showDialogGoalReached();
             }
         };
+    }
+
+    private void showDialogGoalReached() {
+        final String tempo = AppContext.getCurrentDateTime();
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.all_label_goal_reached)
+                .setMessage(String.format("Tempo: %s", tempo))
+                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new Database(MainActivity.this)
+                                .register(tempo);
+                    }
+                })
+                .create().show();
     }
 
 
@@ -215,10 +255,12 @@ public class MainActivity extends AppCompatActivity {
     private void stopClock() {
         mainTimer.cancel();
 
-        if (totalSeconds == 0 || isTargetReached)
+        if (totalSeconds == 0 || isGoalReached)
             button.setText(R.string.all_button_start);
         else
             button.setText(R.string.all_button_resume);
+
+        toggleUIComponents(true);
     }
 
     private void resumeClock() {
@@ -230,30 +272,42 @@ public class MainActivity extends AppCompatActivity {
     private void restoreClock() {
         stopClock();
         tvTimer.setText(R.string.tv_clock_label_placeholder);
+        lblChooseHour.setText(R.string.all_label_time_choose_placeholder);
+        lblChooseMinute.setText(R.string.all_label_time_choose_placeholder);
+        lblChooseSecond.setText(R.string.all_label_time_choose_placeholder);
         totalSeconds = 0;
         clockEnabled = false;
+        isGoalReached = false;
+        toggleUIComponents(false);
+    }
+
+    private void toggleUIComponents(boolean enabled) {
+        restartMenuItem.setEnabled(enabled);
     }
 
     private TimerTask initializeTimer() {
         return new TimerTask() {
             @Override
             public void run() {
+                if (totalSeconds == 0) {
+                    defineTimeTarget();
+                }
+
+                updateUI();
                 incrementTotalSeconds();
-                updateClockLabel();
-                verifyTimeTarget();
             }
         };
     }
 
-    private void updateClockLabel() {
-        this.runOnUiThread(clockLabelUpdateThread);
+    private void updateUI() {
+        this.runOnUiThread(updateUIThread);
     }
 
     private void targetReached() {
         this.runOnUiThread(targetReachedThread);
     }
 
-    private String getFormattedTime() {
+    private String formatLabelTimeString() {
         String clock;
         if (totalSeconds < 60) {
             clock = "00:00:"
@@ -287,29 +341,29 @@ public class MainActivity extends AppCompatActivity {
         int minutes = Integer.parseInt(lblChooseMinute.getText().toString());
         int hours = Integer.parseInt(lblChooseHour.getText().toString());
 
-        totalTargetSeconds = seconds
+        totalGoalSeconds = seconds
                 + minutes * 60
                 + hours * 3600;
 
     }
 
-    private void verifyTimeTarget() {
-        if (totalSeconds == totalTargetSeconds) {
+    private void incrementTotalSeconds() {
+        totalSeconds++;
+
+        // EVERY TIME TOTAL SECONDS IS INCREMENTED
+        // THE GOAL TIME IS VERIFIED
+        if (totalSeconds == totalGoalSeconds) {
             targetReached();
         }
     }
 
-    private void incrementTotalSeconds() {
-        totalSeconds++;
-    }
-
-    private void playDefinedSound() {
+    private void playSound() {
         SharedPreferences preferences = getSharedPreferences(AppContext.PREFS, MODE_PRIVATE);
 
         final MediaPlayer mediaPlayer = MediaPlayer.create(
                 this,
-                preferences.getInt(AppContext.TARGET_SOUND,
-                        AppContext.DEFAULT_SOUND));
+                preferences.getInt(AppContext.DAIMOKU_GOAL_SOUND,
+                        AppContext.DEFAULT_DAIMOKU_GOAL_SOUND));
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             int timesPlayed = 0;
 
@@ -324,10 +378,10 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer.start();
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.options, menu);
+        restartMenuItem = menu.findItem(R.id.action_restart);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -349,9 +403,9 @@ public class MainActivity extends AppCompatActivity {
                     .create().show();
         } else if (id == R.id.action_sound) {
             startActivity(new Intent(this, SelectSoundActivity.class));
-        } else if (id == R.id.action_history) {
-            // SHOW ACTIVITY DAIMOKU HISTORY
         }
+
         return super.onOptionsItemSelected(item);
     }
+
 }

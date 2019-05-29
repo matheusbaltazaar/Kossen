@@ -16,9 +16,6 @@ import com.baltazarstudio.kossen.context.AppContext;
 
 public class SelectSoundActivity extends AppCompatActivity {
 
-
-    private BaseAdapter defaultAdapter;
-    private BaseAdapter melodiesAdapter;
     private int previousSelectedSound;
     private SharedPreferences preferences;
     private MenuItem menuItemOK;
@@ -30,37 +27,25 @@ public class SelectSoundActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         preferences = getSharedPreferences(AppContext.PREFS, MODE_PRIVATE);
-        previousSelectedSound = preferences.getInt(AppContext.TARGET_SOUND, 0);
+        previousSelectedSound = preferences.getInt(AppContext.DAIMOKU_GOAL_SOUND, 0);
 
-        defaultAdapter = new ListSoundAdapter(this, ListSoundAdapter.DEFAULT);
-        melodiesAdapter = new ListSoundAdapter(this, ListSoundAdapter.MELODIES);
-
-        final AdapterView.OnItemClickListener updateRingAdapterListener
-                = new AdapterView.OnItemClickListener() {
+        final ListView listSoundsDefault = findViewById(R.id.listview_sounds);
+        listSoundsDefault.setAdapter(new ListSoundAdapter(this));
+        listSoundsDefault.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 updateRing(id);
-                defaultAdapter.notifyDataSetChanged();
-                melodiesAdapter.notifyDataSetChanged();
+                ((BaseAdapter) parent.getAdapter()).notifyDataSetChanged();
             }
-        };
-
-
-        final ListView listSoundsDefault = findViewById(R.id.listview_sounds_default);
-        listSoundsDefault.setAdapter(defaultAdapter);
-        listSoundsDefault.setOnItemClickListener(updateRingAdapterListener);
+        });
         listSoundsDefault.setDivider(null);
 
-        final ListView listSoundsMelodies = findViewById(R.id.listview_sounds_melodies);
-        listSoundsMelodies.setAdapter(melodiesAdapter);
-        listSoundsMelodies.setOnItemClickListener(updateRingAdapterListener);
-        listSoundsMelodies.setDivider(null);
 
     }
 
     private void updateRing(long id) {
         preferences.edit()
-                .putInt(AppContext.TARGET_SOUND, (int) id)
+                .putInt(AppContext.DAIMOKU_GOAL_SOUND, (int) id)
                 .apply();
     }
 
@@ -85,7 +70,7 @@ public class SelectSoundActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         preferences.edit()
-                .putInt(AppContext.TARGET_SOUND, previousSelectedSound)
+                .putInt(AppContext.DAIMOKU_GOAL_SOUND, previousSelectedSound)
                 .apply();
         super.onBackPressed();
     }
