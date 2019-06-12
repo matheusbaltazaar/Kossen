@@ -10,153 +10,140 @@
     tools:ignore="ContentDescription">
 
 
-    <TextView
-        android:id="@+id/tv_goal_reached_message"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="@string/all_label_goal_reached"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:visibility="gone" />
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/all_label_meta"
-        android:textColor="@android:color/black"
-        android:textSize="24sp" />
-
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/all_label_meta"
+            android:textColor="@android:color/black"
+            android:textSize="24sp" />
+
+
+        <TextView
+            android:id="@+id/tv_goal_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/layer_goal_time"
+            android:gravity="center"
+            android:paddingStart="64dp"
+            android:paddingEnd="64dp"
+            android:text="@string/tv_clock_label_placeholder"
+            android:textSize="42sp" />
 
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="8dp">
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:orientation="horizontal"
+            android:paddingStart="48dp"
+            android:paddingEnd="48dp">
 
-            <ImageButton
-                android:id="@+id/button_increase_hour"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:background="@drawable/all_circle_button"
-                android:padding="8dp"
-                android:src="@drawable/ic_add" />
 
             <TextView
-                android:id="@+id/lb_choose_hour"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/square_border_background"
-                android:padding="8dp"
-                android:textSize="30sp" />
-
-            <ImageButton
-                android:id="@+id/button_decrease_hour"
-                android:layout_width="wrap_content"
+                android:id="@+id/button_increase_time_one_hour"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
-                android:background="@drawable/all_circle_button"
-                android:padding="8dp"
-                android:src="@drawable/ic_subtract" />
+                android:layout_weight="1"
+                android:background="@drawable/all_rounded_border_button_green"
+                android:focusable="true"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:text="@string/label_add_time_one_hour"
+                android:textAlignment="center"
+                android:textColor="@color/green"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/button_increase_time_thirty_minutes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/all_rounded_border_button_green"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:text="@string/label_add_time_thirty_minutes"
+                android:textAlignment="center"
+                android:textColor="@color/green"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/button_increase_time_fifteen_minutes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/all_rounded_border_button_green"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:text="@string/label_add_time_fifteen_minutes"
+                android:textAlignment="center"
+                android:textColor="@color/green"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/button_increase_time_five_minutes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="@drawable/all_rounded_border_button_green"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:text="@string/label_add_time_five_minutes"
+                android:textAlignment="center"
+                android:textColor="@color/green"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/button_reset"
+            android:layout_width="320dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="8dp">
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/all_rounded_border_button_green"
+            android:text="@string/all_button_reset"
+            android:textColor="@color/green"
+            android:textSize="20sp" />
 
-            <ImageButton
-                android:id="@+id/button_increase_minute"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:background="@drawable/all_circle_button"
-                android:padding="8dp"
-                android:src="@drawable/ic_add" />
-
-            <TextView
-                android:id="@+id/lb_choose_minute"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/square_border_background"
-                android:padding="8dp"
-                android:textSize="30sp" />
-
-            <ImageButton
-                android:id="@+id/button_decrease_minute"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:background="@drawable/all_circle_button"
-                android:padding="8dp"
-                android:src="@drawable/ic_subtract" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="8dp">
-
-            <ImageButton
-                android:id="@+id/button_increase_second"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:background="@drawable/all_circle_button"
-                android:padding="8dp"
-                android:src="@drawable/ic_add" />
-
-            <TextView
-                android:id="@+id/lb_choose_second"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/square_border_background"
-                android:padding="8dp"
-                android:textSize="30sp" />
-
-            <ImageButton
-                android:id="@+id/button_decrease_second"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:background="@drawable/all_circle_button"
-                android:padding="8dp"
-                android:src="@drawable/ic_subtract" />
-
-        </LinearLayout>
 
     </LinearLayout>
 
 
     <TextView
-        android:id="@+id/tv_clock_counter"
+        android:id="@+id/tv_time_counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="@string/tv_clock_label_placeholder"
         android:textColor="@android:color/black"
         android:textSize="36sp" />
 
 
     <Button
-        android:id="@+id/bt_start_stop_clock"
-        android:layout_width="300dp"
+        android:id="@+id/bt_start_stop_time"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/all_rounded_button"
+        android:background="@drawable/all_rounded_button_green"
         android:text="@string/all_button_start"
         android:textColor="@color/white"
         android:textSize="20sp" />

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.baltazarstudio.kossen.ui.MainActivity;
-
 public class Database extends SQLiteOpenHelper {
 
 
