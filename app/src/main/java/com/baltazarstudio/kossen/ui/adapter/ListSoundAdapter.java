@@ -1,4 +1,4 @@
-package com.baltazarstudio.kossen.adapter;
+package com.baltazarstudio.kossen.ui.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;

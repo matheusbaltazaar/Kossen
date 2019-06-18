@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -63,34 +62,28 @@ public class MainActivity extends AppCompatActivity {
 
         tvGoalTime = findViewById(R.id.tv_goal_time);
 
-        TextView increaseOneHour = findViewById(R.id.button_increase_time_one_hour);
-        increaseOneHour.setOnClickListener(new View.OnClickListener() {
+        final View.OnClickListener increaseListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                increaseGoalTime(60);
+                increaseGoalTime((int) v.getTag());
             }
-        });
-        TextView increaseThirtyMinutes = findViewById(R.id.button_increase_time_thirty_minutes);
-        increaseThirtyMinutes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                increaseGoalTime(30);
-            }
-        });
-        TextView increaseFifteenMinutes = findViewById(R.id.button_increase_time_fifteen_minutes);
-        increaseFifteenMinutes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                increaseGoalTime(15);
-            }
-        });
-        TextView increaseFiveMinutes = findViewById(R.id.button_increase_time_five_minutes);
-        increaseFiveMinutes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                increaseGoalTime(5);
-            }
-        });
+        };
+
+        final TextView increaseOneHour = findViewById(R.id.button_increase_time_one_hour);
+        increaseOneHour.setTag(60);
+        increaseOneHour.setOnClickListener(increaseListener);
+
+        final TextView increaseThirtyMinutes = findViewById(R.id.button_increase_time_thirty_minutes);
+        increaseThirtyMinutes.setTag(30);
+        increaseThirtyMinutes.setOnClickListener(increaseListener);
+
+        final TextView increaseFifteenMinutes = findViewById(R.id.button_increase_time_fifteen_minutes);
+        increaseFifteenMinutes.setTag(15);
+        increaseFifteenMinutes.setOnClickListener(increaseListener);
+
+        final TextView increaseFiveMinutes = findViewById(R.id.button_increase_time_five_minutes);
+        increaseFiveMinutes.setTag(5);
+        increaseFiveMinutes.setOnClickListener(increaseListener);
 
         buttonReset = findViewById(R.id.button_reset);
         buttonReset.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.options, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -117,7 +110,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_sound) {
+        if (id == R.id.action_history) {
+            startActivity(new Intent(this, HistoryActivity.class));
+        } else if (id == R.id.action_sound) {
             startActivity(new Intent(this, SelectSoundActivity.class));
         }
         return super.onOptionsItemSelected(item);
@@ -125,7 +120,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void increaseGoalTime(int minutes) {
         totalGoalSeconds += minutes * 60;
+//        totalGoalSeconds = 5;
         tvGoalTime.setText(formatLabelTimeString(totalGoalSeconds));
+
+        toggleUIComponents(true);
     }
 
     private Runnable initializeUpdateUIThread() {
@@ -159,16 +157,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createDialogGoalReached() {
-        final String tempo = AppContext.getCurrentDateTime();
+        final String data = AppContext.getCurrentDateTime();
 
         new AlertDialog.Builder(this)
                 .setCancelable(false)
                 .setTitle(R.string.all_label_goal_reached)
-                .setMessage(String.format("Tempo: %s", tempo))
+                .setMessage(String.format("Tempo: %s", data))
                 .setNeutralButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        database.register(tempo);
+                        database.register(
+                                tvTimer.getText().toString(),
+                                data);
                         dialog.dismiss();
                     }
                 })
@@ -182,7 +182,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void stopClock() {
-        mainTimer.cancel();
+        if (mainTimer != null)
+            mainTimer.cancel();
 
         if (totalSeconds == 0 || isGoalReached)
             buttonStartStop.setText(R.string.all_button_start);
@@ -201,7 +202,10 @@ public class MainActivity extends AppCompatActivity {
     private void restoreClock() {
         stopClock();
         tvTimer.setText(R.string.tv_clock_label_placeholder);
+        tvGoalTime.setText(R.string.tv_clock_label_placeholder);
+        buttonStartStop.setText(R.string.all_button_start);
         totalSeconds = 0;
+        totalGoalSeconds = 0;
         clockEnabled = false;
         isGoalReached = false;
         toggleUIComponents(false);
@@ -211,13 +215,13 @@ public class MainActivity extends AppCompatActivity {
 //        restartMenuItem.setEnabled(enabled);
         buttonReset.setEnabled(enabled);
 
-        if (enabled) {
-            buttonReset.setBackgroundResource(R.drawable.all_rounded_border_button_green);
-            buttonReset.setTextColor(ContextCompat.getColor(this, R.color.green));
-        } else {
-            buttonReset.setBackgroundResource(R.drawable.all_rounded_border_button_gray);
-            buttonReset.setTextColor(ContextCompat.getColor(this, android.R.color.darker_gray));
-        }
+//        if (enabled) {
+//            buttonReset.setBackgroundResource(R.drawable.all_rounded_border_button_green);
+//            buttonReset.setTextColor(ContextCompat.getColor(this, R.color.green));
+//        } else {
+//            buttonReset.setBackgroundResource(R.drawable.all_rounded_border_button_gray);
+//            buttonReset.setTextColor(ContextCompat.getColor(this, android.R.color.darker_gray));
+//        }
     }
 
     private TimerTask initializeTimer() {
@@ -243,25 +247,26 @@ public class MainActivity extends AppCompatActivity {
         if (totalSeconds < 60) {
             clock = "00:00:"
                     + (totalSeconds < 10 ? "0" + totalSeconds : totalSeconds);
-        } else {
-            int seconds = totalSeconds % 60;
+        } else if (totalSeconds < 3600) {
             int minutos = totalSeconds / 60;
+            int seconds = totalSeconds % 60;
+            clock = "00:"
+                    + (minutos < 10 ? "0" + minutos : minutos)
+                    + ":"
+                    + (seconds < 10 ? "0" + seconds : seconds);
+        } else {
 
-            if (minutos < 60) {
-                clock = "00:"
-                        + (minutos < 10 ? "0" + minutos : minutos)
-                        + ":"
-                        + (seconds < 10 ? "0" + seconds : seconds);
-            } else {
-                int horas = minutos / 60;
-                minutos = minutos % 60;
-                seconds = minutos % 60;
-                clock = (horas < 10 ? "0" + horas : horas)
-                        + ":"
-                        + (minutos < 10 ? "0" + minutos : minutos)
-                        + ":"
-                        + (seconds < 10 ? "0" + seconds : seconds);
-            }
+            int horas = totalSeconds / 3600; // 60 * 60
+            int minutos = (totalSeconds % 3600);
+            int seconds = minutos % 60;
+            minutos /= 60;
+
+
+            clock = (horas < 10 ? "0" + horas : horas)
+                    + ":"
+                    + (minutos < 10 ? "0" + minutos : minutos)
+                    + ":"
+                    + (seconds < 10 ? "0" + seconds : seconds);
         }
 
         return clock;

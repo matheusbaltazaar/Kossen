@@ -2,7 +2,6 @@
     <string name="app_name">Kossen</string>
 
 
-
     <string name="all_menu_action_restart">Reiniciar</string>
     <string name="all_menu_action_history">Histórico de Daimoku</string>
     <string name="all_menu_action_sound">Alterar toque</string>
@@ -17,7 +16,6 @@
     <string name="all_label_sounds_section_melodies">Melodias</string>
 
 
-
     <string name="tv_clock_label_placeholder">00:00:00</string>
     <string name="title_activity_sound_choose">Escolha um toque</string>
     <string name="all_label_goal_reached">Parabéns, você atingiu sua meta!</string>
@@ -26,4 +24,5 @@
     <string name="label_add_time_fifteen_minutes">+15m</string>
     <string name="label_add_time_five_minutes">+5m</string>
     <string name="all_button_reset">RESTAURAR</string>
+    <string name="title_activity_history">Histórico</string>
 </resources>

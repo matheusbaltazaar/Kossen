@@ -5,14 +5,16 @@
     android:layout_height="match_parent"
     android:background="@drawable/activity_frame"
     android:gravity="center"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     tools:context=".ui.MainActivity"
+    android:weightSum="1"
     tools:ignore="ContentDescription">
 
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight=".85"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -26,12 +28,10 @@
 
         <TextView
             android:id="@+id/tv_goal_time"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/layer_goal_time"
             android:gravity="center"
-            android:paddingStart="64dp"
-            android:paddingEnd="64dp"
             android:text="@string/tv_clock_label_placeholder"
             android:textSize="42sp" />
 
@@ -42,8 +42,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:orientation="horizontal"
-            android:paddingStart="48dp"
-            android:paddingEnd="48dp">
+            android:weightSum="4">
 
 
             <TextView
@@ -59,7 +58,7 @@
                 android:text="@string/label_add_time_one_hour"
                 android:textAlignment="center"
                 android:textColor="@color/green"
-                android:textSize="20sp"
+                android:textSize="@dimen/all_increase_button_size_text"
                 android:textStyle="bold" />
 
             <TextView
@@ -76,7 +75,7 @@
                 android:text="@string/label_add_time_thirty_minutes"
                 android:textAlignment="center"
                 android:textColor="@color/green"
-                android:textSize="20sp"
+                android:textSize="@dimen/all_increase_button_size_text"
                 android:textStyle="bold" />
 
             <TextView
@@ -93,7 +92,7 @@
                 android:text="@string/label_add_time_fifteen_minutes"
                 android:textAlignment="center"
                 android:textColor="@color/green"
-                android:textSize="20sp"
+                android:textSize="@dimen/all_increase_button_size_text"
                 android:textStyle="bold" />
 
             <TextView
@@ -110,43 +109,41 @@
                 android:text="@string/label_add_time_five_minutes"
                 android:textAlignment="center"
                 android:textColor="@color/green"
-                android:textSize="20sp"
+                android:textSize="@dimen/all_increase_button_size_text"
                 android:textStyle="bold" />
 
         </LinearLayout>
 
         <Button
             android:id="@+id/button_reset"
-            android:layout_width="320dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
+            android:enabled="false"
             android:background="@drawable/all_rounded_border_button_green"
             android:text="@string/all_button_reset"
             android:textColor="@color/green"
             android:textSize="20sp" />
 
+        <TextView
+            android:id="@+id/tv_time_counter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/tv_clock_label_placeholder"
+            android:textColor="@android:color/black"
+            android:textSize="36sp" />
 
+
+        <Button
+            android:id="@+id/bt_start_stop_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/all_rounded_button_green"
+            android:text="@string/all_button_start"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
     </LinearLayout>
-
-
-    <TextView
-        android:id="@+id/tv_time_counter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/tv_clock_label_placeholder"
-        android:textColor="@android:color/black"
-        android:textSize="36sp" />
-
-
-    <Button
-        android:id="@+id/bt_start_stop_time"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/all_rounded_button_green"
-        android:text="@string/all_button_start"
-        android:textColor="@color/white"
-        android:textSize="20sp" />
 
 
 </LinearLayout>

@@ -11,8 +11,8 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 
 import com.baltazarstudio.kossen.R;
-import com.baltazarstudio.kossen.adapter.ListSoundAdapter;
 import com.baltazarstudio.kossen.context.AppContext;
+import com.baltazarstudio.kossen.ui.adapter.ListSoundAdapter;
 
 public class SelectSoundActivity extends AppCompatActivity {
 
