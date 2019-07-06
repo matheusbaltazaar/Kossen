@@ -20,7 +20,7 @@ public class Database extends SQLiteOpenHelper {
     private static final String HISTORICO_DURACAO = "duracao";
     private static final String HISTORICO_DATA = "data";
 
-    private SQLiteStatement historyStatement;
+    private SQLiteStatement stmtInsertHistory;
 
 
     public Database(Context context) {
@@ -46,7 +46,7 @@ public class Database extends SQLiteOpenHelper {
 
     private void prepareStatements() {
         SQLiteDatabase db = getWritableDatabase();
-        historyStatement = db.compileStatement("INSERT INTO " + TABELA_HISTORICO + "("
+        stmtInsertHistory = db.compileStatement("INSERT INTO " + TABELA_HISTORICO + "("
                 + HISTORICO_DURACAO + ","
                 + HISTORICO_DATA + ")"
                 + " VALUES (?, ?)"
@@ -55,12 +55,12 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public void register(String duracao, String tempo) {
-        historyStatement.clearBindings();
+        stmtInsertHistory.clearBindings();
 
-        historyStatement.bindString(1, duracao);
-        historyStatement.bindString(2, tempo);
+        stmtInsertHistory.bindString(1, duracao);
+        stmtInsertHistory.bindString(2, tempo);
 
-        historyStatement.executeInsert();
+        stmtInsertHistory.executeInsert();
 
     }
 
