@@ -25,4 +25,12 @@
     <string name="label_add_time_five_minutes">+5m</string>
     <string name="all_button_reset">RESTAURAR</string>
     <string name="title_activity_history">Histórico</string>
+    <string name="all_history_label_total_time">Tempo Total:</string>
+    <string name="all_history_total_time_placeholder">0 horas, 0 minutos e 0 segundos</string>
+
+    <string-array name="array_sounds">
+        <item>Camila Cabello Havana</item>
+        <item>Magical Morning</item>
+        <item>Light Ringtone</item>
+    </string-array>
 </resources>

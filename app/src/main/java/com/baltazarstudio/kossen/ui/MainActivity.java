@@ -1,11 +1,11 @@
 package com.baltazarstudio.kossen.ui;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -13,28 +13,40 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baltazarstudio.kossen.R;
-import com.baltazarstudio.kossen.context.AppContext;
 import com.baltazarstudio.kossen.database.Database;
+import com.baltazarstudio.kossen.model.Sounds;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-    private Timer mainTimer;
-    private TextView tvTimer;
-    private boolean clockEnabled = false;
-    private int totalSeconds = 0;
-    private Runnable updateUIThread;
-    private Runnable targetReachedThread;
-    private Button buttonStartStop;
-    private int totalGoalSeconds = 0;
-    private boolean isGoalReached = false;
-    private Button buttonReset;
+
+    private final String DAIMOKU_GOAL_SOUND = "goal_sound";
+    private final int DEFAULT_DAIMOKU_GOAL_SOUND = R.raw.camila_cabello_havana;
     private TextView tvGoalTime;
+    private TextView tvTimer;
+
+    private int totalSeconds = 0;
+    private int totalGoalSeconds = 0;
+    private Button buttonReset;
+    private boolean isGoalReached = false;
+
     private Database database;
+    private Button buttonStartStop;
+    private boolean clockEnabled = false;
+    private Handler handler = new Handler();
+    private Runnable runnable;
+    // Media Player
+    private MediaPlayer mediaPlayer;
+    private SharedPreferences preferences = getSharedPreferences("prefs", MODE_PRIVATE);
+
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,15 +69,13 @@ public class MainActivity extends AppCompatActivity {
 
         tvTimer = findViewById(R.id.tv_time_counter);
 
-        targetReachedThread = initializeTargetReachedThread(this);
-        updateUIThread = initializeUpdateUIThread();
 
         tvGoalTime = findViewById(R.id.tv_goal_time);
 
         final View.OnClickListener increaseListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                increaseGoalTime((int) v.getTag());
+                increase((int) v.getTag());
             }
         };
 
@@ -113,12 +123,12 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_history) {
             startActivity(new Intent(this, HistoryActivity.class));
         } else if (id == R.id.action_sound) {
-            startActivity(new Intent(this, SelectSoundActivity.class));
+            createDialogSelectSound();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void increaseGoalTime(int minutes) {
+    private void increase(int minutes) {
         totalGoalSeconds += minutes * 60;
 //        totalGoalSeconds = 5;
         tvGoalTime.setText(formatLabelTimeString(totalGoalSeconds));
@@ -126,64 +136,8 @@ public class MainActivity extends AppCompatActivity {
         toggleUIComponents(true);
     }
 
-    private Runnable initializeUpdateUIThread() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                if (isGoalReached) {
-                    buttonStartStop.setText(R.string.all_button_resume);
-                    toggleUIComponents(true);
-                } else {
-                    tvTimer.setText(formatLabelTimeString(totalSeconds));
-                    toggleUIComponents(false);
-                }
-            }
-        };
-    }
-
-    private Runnable initializeTargetReachedThread(final Context context) {
-        return new Runnable() {
-            @Override
-            public void run() {
-                isGoalReached = true;
-                stopClock();
-                playSound();
-                updateUI();
-                Toast.makeText(context, AppContext.getCurrentDateTime(), Toast.LENGTH_LONG).show();
-
-                createDialogGoalReached();
-            }
-        };
-    }
-
-    private void createDialogGoalReached() {
-        final String data = AppContext.getCurrentDateTime();
-
-        new AlertDialog.Builder(this)
-                .setCancelable(false)
-                .setTitle(R.string.all_label_goal_reached)
-                .setMessage(String.format("Tempo: %s", data))
-                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        database.register(
-                                tvTimer.getText().toString(),
-                                data);
-                        dialog.dismiss();
-                    }
-                })
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        stopSound();
-                    }
-                })
-                .create().show();
-    }
-
     private void stopClock() {
-        if (mainTimer != null)
-            mainTimer.cancel();
+        handler.removeCallbacks(runnable);
 
         if (totalSeconds == 0 || isGoalReached)
             buttonStartStop.setText(R.string.all_button_start);
@@ -194,9 +148,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void resumeClock() {
-        mainTimer = new Timer();
-        mainTimer.scheduleAtFixedRate(initializeTimer(), 0, 1000);
         buttonStartStop.setText(R.string.all_button_stop);
+
+        if (isGoalReached) {
+            buttonStartStop.setText(R.string.all_button_resume);
+            toggleUIComponents(true);
+        } else {
+            tvTimer.setText(formatLabelTimeString(totalSeconds));
+            toggleUIComponents(false);
+        }
+
+        handler.postDelayed(getRunnable(), 1000);
     }
 
     private void restoreClock() {
@@ -212,34 +174,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void toggleUIComponents(boolean enabled) {
-//        restartMenuItem.setEnabled(enabled);
         buttonReset.setEnabled(enabled);
-
-//        if (enabled) {
-//            buttonReset.setBackgroundResource(R.drawable.all_rounded_border_button_green);
-//            buttonReset.setTextColor(ContextCompat.getColor(this, R.color.green));
-//        } else {
-//            buttonReset.setBackgroundResource(R.drawable.all_rounded_border_button_gray);
-//            buttonReset.setTextColor(ContextCompat.getColor(this, android.R.color.darker_gray));
-//        }
     }
 
-    private TimerTask initializeTimer() {
-        return new TimerTask() {
-            @Override
-            public void run() {
-                updateUI();
-                incrementTotalSeconds();
-            }
-        };
+    private Runnable getRunnable() {
+        if (runnable == null)
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    updateUI();
+
+                    // EVERY TIME TOTAL SECONDS IS INCREMENTED
+                    // THE GOAL TIME IS VERIFIED
+                    if (totalSeconds == totalGoalSeconds) {
+                        targetReached();
+                    }
+
+                    handler.postDelayed(runnable, 1000);
+                }
+            };
+        return runnable;
     }
 
     private void updateUI() {
-        this.runOnUiThread(updateUIThread);
-    }
-
-    private void targetReached() {
-        this.runOnUiThread(targetReachedThread);
+        if (isGoalReached) {
+            buttonStartStop.setText(R.string.all_button_resume);
+            toggleUIComponents(true);
+        } else {
+            incrementTotalSeconds();
+            tvTimer.setText(formatLabelTimeString(totalSeconds));
+        }
     }
 
     private String formatLabelTimeString(int totalSeconds) {
@@ -272,32 +236,55 @@ public class MainActivity extends AppCompatActivity {
         return clock;
     }
 
+    private void targetReached() {
+        isGoalReached = true;
+        stopClock();
+        playSound();
+        updateUI();
+        createDialogGoalReached();
+    }
+
+    private void createDialogGoalReached() {
+
+        Locale mLocale = new Locale("pt", "BR");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", mLocale);
+        final String data = sdf.format(Calendar.getInstance().getTime());
+
+        new AlertDialog.Builder(this)
+                .setCancelable(false)
+                .setTitle(R.string.all_label_goal_reached)
+                .setMessage(String.format("Tempo: %s", data))
+                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        database.register(
+                                tvTimer.getText().toString(),
+                                data);
+                        dialog.dismiss();
+                    }
+                })
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        stopSound();
+                    }
+                })
+                .create().show();
+    }
+
     private void incrementTotalSeconds() {
         totalSeconds++;
 
-        // EVERY TIME TOTAL SECONDS IS INCREMENTED
-        // THE GOAL TIME IS VERIFIED
-        if (totalSeconds == totalGoalSeconds) {
-            targetReached();
-        }
     }
 
     private void playSound() {
-        SharedPreferences preferences = getSharedPreferences(AppContext.PREFS, MODE_PRIVATE);
+        int soundId = preferences.getInt(DAIMOKU_GOAL_SOUND, DEFAULT_DAIMOKU_GOAL_SOUND);
 
-        final MediaPlayer mediaPlayer = MediaPlayer.create(
-                this,
-                preferences.getInt(AppContext.DAIMOKU_GOAL_SOUND,
-                        AppContext.DEFAULT_DAIMOKU_GOAL_SOUND));
+        mediaPlayer = MediaPlayer.create(this, soundId);
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            int timesPlayed = 0;
-
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                if (++timesPlayed < 5)
-                    mediaPlayer.start();
-                else
-                    mediaPlayer.release();
+                mediaPlayer.release();
             }
         });
         mediaPlayer.start();
@@ -321,4 +308,41 @@ public class MainActivity extends AppCompatActivity {
                 .create().show();
     }
 
+    private void createDialogSelectSound() {
+        final int previousSound = preferences.getInt(DAIMOKU_GOAL_SOUND, DEFAULT_DAIMOKU_GOAL_SOUND);
+        final boolean[] confirmed = {false};
+
+        new AlertDialog.Builder(this)
+                .setTitle("Escolha uma melodia")
+                .setSingleChoiceItems(R.array.array_sounds, -1, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        updateRing(Sounds.get(which));
+                        playSound();
+                    }
+                })
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        confirmed[0] = true;
+                    }
+                })
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        mediaPlayer.release();
+                        if (!confirmed[0]) {
+                            updateRing(previousSound);
+                        }
+                    }
+                })
+                .create()
+                .show();
+    }
+
+    private void updateRing(int id) {
+        preferences.edit()
+                .putInt(DAIMOKU_GOAL_SOUND, id)
+                .apply();
+    }
 }
