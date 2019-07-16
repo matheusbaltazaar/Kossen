@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.baltazarstudio.kossen.R;
+import com.baltazarstudio.kossen.component.Chronometer;
 import com.baltazarstudio.kossen.database.Database;
 import com.baltazarstudio.kossen.model.Sounds;
 
@@ -26,26 +27,19 @@ public class MainActivity extends AppCompatActivity {
 
     private final String DAIMOKU_GOAL_SOUND = "goal_sound";
     private final int DEFAULT_DAIMOKU_GOAL_SOUND = R.raw.camila_cabello_havana;
-    private TextView tvGoalTime;
-    private TextView tvTimer;
 
-    private int totalSeconds = 0;
-    private int totalGoalSeconds = 0;
+    private TextView labelGoalTime;
+    private TextView labelCurrentTime;
     private Button buttonReset;
-    private boolean isGoalReached = false;
+    private Button buttonStartStop;
 
     private Database database;
-    private Button buttonStartStop;
-    private boolean clockEnabled = false;
-    private Handler handler = new Handler();
-    private Runnable runnable;
+
     // Media Player
     private MediaPlayer mediaPlayer;
-    private SharedPreferences preferences = getSharedPreferences("prefs", MODE_PRIVATE);
+    private SharedPreferences preferences;
 
-
-
-
+    private Chronometer mChronometer;
 
 
     @Override
@@ -53,24 +47,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        preferences = getSharedPreferences("prefs", MODE_PRIVATE);
+
         buttonStartStop = findViewById(R.id.bt_start_stop_time);
         buttonStartStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clockEnabled = !clockEnabled;
-
-                if (clockEnabled) {
-                    resumeClock();
+                if (!mChronometer.isRunning()) {
+                    mChronometer.resume();
+                    buttonStartStop.setText(R.string.all_button_stop);
                 } else {
-                    stopClock();
+                    mChronometer.stop();
+                    buttonStartStop.setText(R.string.all_button_start);
+                    toggleUIComponents(true);
                 }
             }
         });
 
-        tvTimer = findViewById(R.id.tv_time_counter);
 
-
-        tvGoalTime = findViewById(R.id.tv_goal_time);
+        labelCurrentTime = findViewById(R.id.tv_current_time);
+        labelGoalTime = findViewById(R.id.tv_goal_time);
 
         final View.OnClickListener increaseListener = new View.OnClickListener() {
             @Override
@@ -99,13 +95,14 @@ public class MainActivity extends AppCompatActivity {
         buttonReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (totalSeconds != 0) // Se o timer não foi iniciado
+                if (mChronometer.isRunning())
                     createResetAlert();
                 else
                     restoreClock();
             }
         });
 
+        setUpChronometer();
 
         database = new Database(this);
     }
@@ -128,48 +125,37 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    private void setUpChronometer() {
+        mChronometer = new Chronometer();
+        mChronometer.setChronometerListener(new Chronometer.ChronometerListener() {
+            @Override
+            public void onTick() {
+                labelCurrentTime.setText(mChronometer.getCurrentTime());
+            }
+
+            @Override
+            public void onTargetReached() {
+                labelCurrentTime.setText(mChronometer.getCurrentTime());
+                playSound();
+                createDialogGoalReached();
+            }
+        });
+    }
+
     private void increase(int minutes) {
-        totalGoalSeconds += minutes * 60;
-//        totalGoalSeconds = 5;
-        tvGoalTime.setText(formatLabelTimeString(totalGoalSeconds));
+//        totalGoalSeconds += minutes * 60;
+        // TODO
+        labelGoalTime.setText(mChronometer.getGoalTime());
 
         toggleUIComponents(true);
-    }
-
-    private void stopClock() {
-        handler.removeCallbacks(runnable);
-
-        if (totalSeconds == 0 || isGoalReached)
-            buttonStartStop.setText(R.string.all_button_start);
-        else
-            buttonStartStop.setText(R.string.all_button_resume);
-
-        toggleUIComponents(true);
-    }
-
-    private void resumeClock() {
-        buttonStartStop.setText(R.string.all_button_stop);
-
-        if (isGoalReached) {
-            buttonStartStop.setText(R.string.all_button_resume);
-            toggleUIComponents(true);
-        } else {
-            tvTimer.setText(formatLabelTimeString(totalSeconds));
-            toggleUIComponents(false);
-        }
-
-        handler.postDelayed(getRunnable(), 1000);
     }
 
     private void restoreClock() {
-        stopClock();
-        tvTimer.setText(R.string.tv_clock_label_placeholder);
-        tvGoalTime.setText(R.string.tv_clock_label_placeholder);
+        mChronometer.reset();
+        labelCurrentTime.setText(mChronometer.getCurrentTime());
+        labelGoalTime.setText(mChronometer.getGoalTime());
         buttonStartStop.setText(R.string.all_button_start);
-        totalSeconds = 0;
-        totalGoalSeconds = 0;
-        clockEnabled = false;
-        isGoalReached = false;
         toggleUIComponents(false);
     }
 
@@ -177,75 +163,7 @@ public class MainActivity extends AppCompatActivity {
         buttonReset.setEnabled(enabled);
     }
 
-    private Runnable getRunnable() {
-        if (runnable == null)
-            runnable = new Runnable() {
-                @Override
-                public void run() {
-                    updateUI();
-
-                    // EVERY TIME TOTAL SECONDS IS INCREMENTED
-                    // THE GOAL TIME IS VERIFIED
-                    if (totalSeconds == totalGoalSeconds) {
-                        targetReached();
-                    }
-
-                    handler.postDelayed(runnable, 1000);
-                }
-            };
-        return runnable;
-    }
-
-    private void updateUI() {
-        if (isGoalReached) {
-            buttonStartStop.setText(R.string.all_button_resume);
-            toggleUIComponents(true);
-        } else {
-            incrementTotalSeconds();
-            tvTimer.setText(formatLabelTimeString(totalSeconds));
-        }
-    }
-
-    private String formatLabelTimeString(int totalSeconds) {
-        String clock;
-        if (totalSeconds < 60) {
-            clock = "00:00:"
-                    + (totalSeconds < 10 ? "0" + totalSeconds : totalSeconds);
-        } else if (totalSeconds < 3600) {
-            int minutos = totalSeconds / 60;
-            int seconds = totalSeconds % 60;
-            clock = "00:"
-                    + (minutos < 10 ? "0" + minutos : minutos)
-                    + ":"
-                    + (seconds < 10 ? "0" + seconds : seconds);
-        } else {
-
-            int horas = totalSeconds / 3600; // 60 * 60
-            int minutos = (totalSeconds % 3600);
-            int seconds = minutos % 60;
-            minutos /= 60;
-
-
-            clock = (horas < 10 ? "0" + horas : horas)
-                    + ":"
-                    + (minutos < 10 ? "0" + minutos : minutos)
-                    + ":"
-                    + (seconds < 10 ? "0" + seconds : seconds);
-        }
-
-        return clock;
-    }
-
-    private void targetReached() {
-        isGoalReached = true;
-        stopClock();
-        playSound();
-        updateUI();
-        createDialogGoalReached();
-    }
-
     private void createDialogGoalReached() {
-
         Locale mLocale = new Locale("pt", "BR");
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", mLocale);
         final String data = sdf.format(Calendar.getInstance().getTime());
@@ -258,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         database.register(
-                                tvTimer.getText().toString(),
+                                labelCurrentTime.getText().toString(),
                                 data);
                         dialog.dismiss();
                     }
@@ -272,10 +190,6 @@ public class MainActivity extends AppCompatActivity {
                 .create().show();
     }
 
-    private void incrementTotalSeconds() {
-        totalSeconds++;
-
-    }
 
     private void playSound() {
         int soundId = preferences.getInt(DAIMOKU_GOAL_SOUND, DEFAULT_DAIMOKU_GOAL_SOUND);
