@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -33,13 +32,16 @@ public class MainActivity extends AppCompatActivity {
     private Button buttonReset;
     private Button buttonStartStop;
 
-    private Database database;
 
     // Media Player
     private MediaPlayer mediaPlayer;
     private SharedPreferences preferences;
 
     private Chronometer mChronometer;
+    private Button buttonIncreaseOneHour;
+    private Button buttonIncreaseThirtyMinutes;
+    private Button buttonIncreaseFifteenMinutes;
+    private Button buttonIncreaseFiveMinutes;
 
 
     @Override
@@ -49,62 +51,75 @@ public class MainActivity extends AppCompatActivity {
 
         preferences = getSharedPreferences("prefs", MODE_PRIVATE);
 
-        buttonStartStop = findViewById(R.id.bt_start_stop_time);
-        buttonStartStop.setOnClickListener(new View.OnClickListener() {
+        labelGoalTime = findViewById(R.id.tv_goal_time);
+
+        buttonIncreaseOneHour = findViewById(R.id.button_increase_time_one_hour);
+        buttonIncreaseOneHour.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if (!mChronometer.isRunning()) {
-                    mChronometer.resume();
-                    buttonStartStop.setText(R.string.all_button_stop);
-                } else {
-                    mChronometer.stop();
-                    buttonStartStop.setText(R.string.all_button_start);
-                    toggleUIComponents(true);
-                }
+            public void onClick(View view) {
+                mChronometer.addMinutes(60);
+                labelGoalTime.setText(mChronometer.getGoalTime());
             }
         });
 
-
-        labelCurrentTime = findViewById(R.id.tv_current_time);
-        labelGoalTime = findViewById(R.id.tv_goal_time);
-
-        final View.OnClickListener increaseListener = new View.OnClickListener() {
+        buttonIncreaseThirtyMinutes = findViewById(R.id.button_increase_time_thirty_minutes);
+        buttonIncreaseThirtyMinutes.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                increase((int) v.getTag());
+            public void onClick(View view) {
+                mChronometer.addMinutes(30);
+                labelGoalTime.setText(mChronometer.getGoalTime());
             }
-        };
+        });
 
-        final TextView increaseOneHour = findViewById(R.id.button_increase_time_one_hour);
-        increaseOneHour.setTag(60);
-        increaseOneHour.setOnClickListener(increaseListener);
+        buttonIncreaseFifteenMinutes = findViewById(R.id.button_increase_time_fifteen_minutes);
+        buttonIncreaseFifteenMinutes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mChronometer.addMinutes(15);
+                labelGoalTime.setText(mChronometer.getGoalTime());
+            }
+        });
 
-        final TextView increaseThirtyMinutes = findViewById(R.id.button_increase_time_thirty_minutes);
-        increaseThirtyMinutes.setTag(30);
-        increaseThirtyMinutes.setOnClickListener(increaseListener);
-
-        final TextView increaseFifteenMinutes = findViewById(R.id.button_increase_time_fifteen_minutes);
-        increaseFifteenMinutes.setTag(15);
-        increaseFifteenMinutes.setOnClickListener(increaseListener);
-
-        final TextView increaseFiveMinutes = findViewById(R.id.button_increase_time_five_minutes);
-        increaseFiveMinutes.setTag(5);
-        increaseFiveMinutes.setOnClickListener(increaseListener);
+        buttonIncreaseFiveMinutes = findViewById(R.id.button_increase_time_five_minutes);
+        buttonIncreaseFiveMinutes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mChronometer.addMinutes(5);
+                labelGoalTime.setText(mChronometer.getGoalTime());
+            }
+        });
 
         buttonReset = findViewById(R.id.button_reset);
         buttonReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mChronometer.isRunning())
+                if (mChronometer.hasStarted())
                     createResetAlert();
                 else
                     restoreClock();
             }
         });
 
-        setUpChronometer();
+        labelCurrentTime = findViewById(R.id.tv_current_time);
 
-        database = new Database(this);
+        buttonStartStop = findViewById(R.id.bt_start_stop_time);
+        buttonStartStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mChronometer.isRunning()) {
+                    mChronometer.stop();
+                    buttonStartStop.setText(R.string.all_button_start);
+                    toggleUIComponents(true);
+                } else {
+                    mChronometer.resume();
+                    buttonStartStop.setText(R.string.all_button_stop);
+                    toggleUIComponents(false);
+                }
+            }
+        });
+
+
+        setUpChronometer();
     }
 
     @Override
@@ -125,10 +140,9 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     private void setUpChronometer() {
         mChronometer = new Chronometer();
-        mChronometer.setChronometerListener(new Chronometer.ChronometerListener() {
+        mChronometer.setTimeListener(new Chronometer.TimeListener() {
             @Override
             public void onTick() {
                 labelCurrentTime.setText(mChronometer.getCurrentTime());
@@ -143,69 +157,54 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void increase(int minutes) {
-//        totalGoalSeconds += minutes * 60;
-        // TODO
-        labelGoalTime.setText(mChronometer.getGoalTime());
-
-        toggleUIComponents(true);
-    }
-
     private void restoreClock() {
         mChronometer.reset();
         labelCurrentTime.setText(mChronometer.getCurrentTime());
         labelGoalTime.setText(mChronometer.getGoalTime());
         buttonStartStop.setText(R.string.all_button_start);
-        toggleUIComponents(false);
+        toggleUIComponents(true);
     }
 
     private void toggleUIComponents(boolean enabled) {
         buttonReset.setEnabled(enabled);
+        buttonIncreaseFiveMinutes.setEnabled(enabled);
+        buttonIncreaseFifteenMinutes.setEnabled(enabled);
+        buttonIncreaseThirtyMinutes.setEnabled(enabled);
+        buttonIncreaseOneHour.setEnabled(enabled);
     }
 
     private void createDialogGoalReached() {
         Locale mLocale = new Locale("pt", "BR");
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", mLocale);
-        final String data = sdf.format(Calendar.getInstance().getTime());
+        final String now = sdf.format(Calendar.getInstance().getTime());
 
         new AlertDialog.Builder(this)
                 .setCancelable(false)
                 .setTitle(R.string.all_label_goal_reached)
-                .setMessage(String.format("Tempo: %s", data))
+                .setMessage(String.format("Tempo: %s", now))
                 .setNeutralButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        database.register(
-                                labelCurrentTime.getText().toString(),
-                                data);
-                        dialog.dismiss();
-                    }
-                })
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
+                        Database database = new Database(MainActivity.this);
+                        database.register(labelCurrentTime.getText().toString(), now);
                         stopSound();
+                        dialog.dismiss();
                     }
                 })
                 .create().show();
     }
 
-
     private void playSound() {
+        stopSound();
         int soundId = preferences.getInt(DAIMOKU_GOAL_SOUND, DEFAULT_DAIMOKU_GOAL_SOUND);
 
         mediaPlayer = MediaPlayer.create(this, soundId);
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                mediaPlayer.release();
-            }
-        });
         mediaPlayer.start();
     }
 
     private void stopSound() {
-        // TODO
+        if (mediaPlayer != null)
+            mediaPlayer.stop();
     }
 
     private void createResetAlert() {
@@ -223,16 +222,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void createDialogSelectSound() {
-        final int previousSound = preferences.getInt(DAIMOKU_GOAL_SOUND, DEFAULT_DAIMOKU_GOAL_SOUND);
+        final int previousSoundId = preferences.getInt(DAIMOKU_GOAL_SOUND, DEFAULT_DAIMOKU_GOAL_SOUND);
         final boolean[] confirmed = {false};
 
         new AlertDialog.Builder(this)
                 .setTitle("Escolha uma melodia")
-                .setSingleChoiceItems(R.array.array_sounds, -1, new DialogInterface.OnClickListener() {
+                .setSingleChoiceItems(R.array.array_sounds, Sounds.getPosition(previousSoundId), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        updateRing(Sounds.get(which));
                         playSound();
+                        updateRing(Sounds.get(which));
                     }
                 })
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -244,19 +243,25 @@ public class MainActivity extends AppCompatActivity {
                 .setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
-                        mediaPlayer.release();
+                        stopSound();
                         if (!confirmed[0]) {
-                            updateRing(previousSound);
+                            updateRing(previousSoundId);
                         }
                     }
                 })
-                .create()
-                .show();
+                .create().show();
     }
 
     private void updateRing(int id) {
         preferences.edit()
                 .putInt(DAIMOKU_GOAL_SOUND, id)
                 .apply();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mediaPlayer != null)
+            mediaPlayer.release();
+        super.onDestroy();
     }
 }

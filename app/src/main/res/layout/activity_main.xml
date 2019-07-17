@@ -45,69 +45,58 @@
             android:weightSum="4">
 
 
-            <TextView
+            <Button
                 android:id="@+id/button_increase_time_one_hour"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:layout_weight="1"
                 android:background="@drawable/all_rounded_border_button_green"
-                android:focusable="true"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
                 android:text="@string/label_add_time_one_hour"
-                android:textAlignment="center"
                 android:textColor="@color/green"
                 android:textSize="@dimen/all_increase_button_size_text"
                 android:textStyle="bold" />
 
-            <TextView
+            <Button
                 android:id="@+id/button_increase_time_thirty_minutes"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:layout_weight="1"
                 android:background="@drawable/all_rounded_border_button_green"
-                android:clickable="true"
-                android:focusable="true"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
                 android:text="@string/label_add_time_thirty_minutes"
-                android:textAlignment="center"
                 android:textColor="@color/green"
                 android:textSize="@dimen/all_increase_button_size_text"
                 android:textStyle="bold" />
 
-            <TextView
+            <Button
                 android:id="@+id/button_increase_time_fifteen_minutes"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:layout_weight="1"
                 android:background="@drawable/all_rounded_border_button_green"
-                android:clickable="true"
-                android:focusable="true"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
                 android:text="@string/label_add_time_fifteen_minutes"
-                android:textAlignment="center"
                 android:textColor="@color/green"
                 android:textSize="@dimen/all_increase_button_size_text"
                 android:textStyle="bold" />
 
-            <TextView
+            <Button
                 android:id="@+id/button_increase_time_five_minutes"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
                 android:layout_weight="1"
                 android:background="@drawable/all_rounded_border_button_green"
-                android:clickable="true"
-                android:focusable="true"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
                 android:text="@string/label_add_time_five_minutes"
-                android:textAlignment="center"
                 android:textColor="@color/green"
                 android:textSize="@dimen/all_increase_button_size_text"
                 android:textStyle="bold" />
