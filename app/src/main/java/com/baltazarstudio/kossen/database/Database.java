@@ -69,12 +69,15 @@ public class Database extends SQLiteOpenHelper {
         ArrayList<Meta> metas = new ArrayList<>();
 
         Cursor cursor = getReadableDatabase().rawQuery(sql, null);
-        while (cursor.moveToNext()) {
-            Meta meta = new Meta();
-            meta.setDuracao(cursor.getString(cursor.getColumnIndex(HISTORICO_DURACAO)));
-            meta.setData(cursor.getString(cursor.getColumnIndex(HISTORICO_DATA)));
+        // ORDEM INVERSA
+        if (cursor.move(cursor.getCount())) {
+            do {
+                Meta meta = new Meta();
+                meta.setDuracao(cursor.getString(cursor.getColumnIndex(HISTORICO_DURACAO)));
+                meta.setData(cursor.getString(cursor.getColumnIndex(HISTORICO_DATA)));
 
-            metas.add(meta);
+                metas.add(meta);
+            } while (cursor.moveToPrevious());
         }
         cursor.close();
 

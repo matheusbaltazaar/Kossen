@@ -25,8 +25,9 @@
     <string name="label_add_time_five_minutes">+5m</string>
     <string name="all_button_reset">RESTAURAR</string>
     <string name="title_activity_history">Histórico</string>
-    <string name="all_history_label_total_time">Tempo Total:</string>
+    <string name="history_total_time_label">Tempo Total:</string>
     <string name="all_history_total_time_placeholder">0 horas, 0 minutos e 0 segundos</string>
+    <string name="meta_list_item_data_label">Data:</string>
 
     <string-array name="array_sounds">
         <item>Camila Cabello Havana</item>

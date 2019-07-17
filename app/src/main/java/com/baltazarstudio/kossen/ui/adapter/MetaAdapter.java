@@ -45,8 +45,8 @@ public class MetaAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(context).inflate(R.layout.meta_list_item, null);
             holder = new ViewHolder();
 
-            holder.duracao = convertView.findViewById(R.id.label_meta_list_item_duracao);
-            holder.data = convertView.findViewById(R.id.label_meta_list_item_data);
+            holder.duracao = convertView.findViewById(R.id.meta_list_item_duracao);
+            holder.data = convertView.findViewById(R.id.meta_list_item_data);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }

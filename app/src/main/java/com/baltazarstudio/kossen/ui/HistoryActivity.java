@@ -26,8 +26,8 @@ public class HistoryActivity extends AppCompatActivity {
         List<Meta> metas = database.getAllGoals();
 
 
-        TextView totalTime = findViewById(R.id.label_history_total_time);
-        totalTime.setText(formatExtenseTimeTotal(metas));
+        TextView totalTime = findViewById(R.id.history_total_time);
+        totalTime.setText(formatTimeTotal(metas));
 
         ListView listHistorico = findViewById(R.id.listview_history);
         listHistorico.setAdapter(new MetaAdapter(this, metas));
@@ -35,51 +35,33 @@ public class HistoryActivity extends AppCompatActivity {
 
     }
 
-    private String formatExtenseTimeTotal(List<Meta> metas) {
+    private String formatTimeTotal(List<Meta> metas) {
         int horas = 0;
         int minutos = 0;
         int segundos = 0;
 
         for (Meta meta : metas) {
-            horas += Integer.parseInt(meta.getDuracao().substring(0, 2));
-            minutos += Integer.parseInt(meta.getDuracao().substring(3, 5));
-            segundos += Integer.parseInt(meta.getDuracao().substring(6));
+            // PADRÃO DURAÇÃO >> ##:##:##
+
+            segundos += Integer.parseInt(meta.getDuracao().substring(6)); // Segundos;
+            if (segundos > 59) {
+                minutos++;
+                segundos = 60 - segundos;
+            }
+
+            minutos += Integer.parseInt(meta.getDuracao().substring(3, 5)); // Minutos
+            if (minutos > 59) {
+                horas++;
+                minutos = 60 - minutos;
+            }
+
+            horas += Integer.parseInt(meta.getDuracao().substring(0, 2)); // Horas
+
         }
 
-        String time = "";
-
-        if (segundos != 0) {
-            time = ", " + segundos + " segundos";
-        }
-
-        if (minutos != 0) {
-            time = ", " + minutos + " minutos" + time;
-        }
-
-        if (horas != 0) {
-            time = horas + " horas" + time;
-        }
-
-        if ((horas == 0 && minutos == 0 && segundos != 0)
-                || (horas == 0 && minutos != 0 && segundos == 0)) {
-            time = time.replace(",", "").trim();
-        } else if (horas != 0 && minutos == 0 && segundos == 0) {
-            // FAÇA NADA
-        } else if (horas == 0 && minutos != 0 && segundos != 0) {
-            time = time.replaceFirst(",", "");
-            time = time.replace(",", " e").trim();
-        } else if (horas != 0 && minutos == 0 && segundos != 0) {
-            time = time.replace(",", " e");
-        } else if (horas != 0 && minutos != 0 && segundos == 0) {
-            time = time.replace(",", " e");
-        } else if (horas != 0 && minutos != 0 && segundos != 0) {
-            time = time.replace(",", " e");
-            time = time.replace("horas e", "horas,");
-        } else {
-            time = "Não há horas registradas";
-        }
-
-        return time;
+        return horas + " horas, "
+                + minutos + " minutos e "
+                + segundos + " segundos";
     }
 
     @Override
