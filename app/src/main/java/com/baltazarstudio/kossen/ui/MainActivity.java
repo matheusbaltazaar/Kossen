@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     // Media Player
-    private MediaPlayer mediaPlayer;
+    private MediaPlayer mMediaPlayer;
     private SharedPreferences preferences;
 
     private Chronometer mChronometer;
@@ -198,13 +198,13 @@ public class MainActivity extends AppCompatActivity {
         stopSound();
         int soundId = preferences.getInt(DAIMOKU_GOAL_SOUND, DEFAULT_DAIMOKU_GOAL_SOUND);
 
-        mediaPlayer = MediaPlayer.create(this, soundId);
-        mediaPlayer.start();
+        mMediaPlayer = MediaPlayer.create(this, soundId);
+        mMediaPlayer.start();
     }
 
     private void stopSound() {
-        if (mediaPlayer != null)
-            mediaPlayer.stop();
+        if (mMediaPlayer != null)
+            mMediaPlayer.stop();
     }
 
     private void createResetAlert() {
@@ -260,8 +260,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (mediaPlayer != null)
-            mediaPlayer.release();
+        if (mMediaPlayer != null)
+            mMediaPlayer.release();
         super.onDestroy();
     }
 }
