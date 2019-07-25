@@ -28,6 +28,9 @@
     <string name="history_total_time_label">Tempo Total:</string>
     <string name="all_history_total_time_placeholder">0 horas, 0 minutos e 0 segundos</string>
     <string name="meta_list_item_data_label">Data:</string>
+    <string name="all_button_save_current_time">SALVAR</string>
+    <string name="all_dialog_title_confirm_register">Confirmar</string>
+    <string name="all_dialog_message_confirm_register">Deseja registrar o tempo atual ?</string>
 
     <string-array name="array_sounds">
         <item>Camila Cabello Havana</item>

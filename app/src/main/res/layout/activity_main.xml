@@ -6,8 +6,8 @@
     android:background="@drawable/activity_frame"
     android:gravity="center"
     android:orientation="horizontal"
-    tools:context=".ui.MainActivity"
     android:weightSum="1"
+    tools:context=".ui.MainActivity"
     tools:ignore="ContentDescription">
 
 
@@ -18,101 +18,110 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/all_label_meta"
-            android:textColor="@android:color/black"
-            android:textSize="24sp" />
 
 
-        <TextView
-            android:id="@+id/tv_goal_time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/layer_goal_time"
-            android:gravity="center"
-            android:text="@string/tv_clock_label_placeholder"
-            android:textSize="42sp" />
+        <FrameLayout
+                android:id="@+id/layout_goal_time_running"
+            android:layout_width="240dp"
+            android:layout_height="240dp"
+            android:background="@drawable/circle_border_green"
+            android:visibility="gone"
+            >
+
+            <include
+                layout="@layout/layout_goal_time" />
+        </FrameLayout>
 
 
         <LinearLayout
+            android:id="@+id/layout_clock_functions_buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:orientation="horizontal"
-            android:weightSum="4">
+            android:orientation="vertical">
 
+
+            <include
+                android:id="@+id/layout_goal_time_stopped"
+                layout="@layout/layout_goal_time" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+
+                <Button
+                    android:id="@+id/button_increase_time_one_hour"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/all_rounded_border_button_green"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    android:text="@string/label_add_time_one_hour"
+                    android:textColor="@color/green"
+                    android:textSize="@dimen/all_increase_button_size_text"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/button_increase_time_thirty_minutes"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/all_rounded_border_button_green"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    android:text="@string/label_add_time_thirty_minutes"
+                    android:textColor="@color/green"
+                    android:textSize="@dimen/all_increase_button_size_text"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/button_increase_time_fifteen_minutes"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/all_rounded_border_button_green"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    android:text="@string/label_add_time_fifteen_minutes"
+                    android:textColor="@color/green"
+                    android:textSize="@dimen/all_increase_button_size_text"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/button_increase_time_five_minutes"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/all_rounded_border_button_green"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    android:text="@string/label_add_time_five_minutes"
+                    android:textColor="@color/green"
+                    android:textSize="@dimen/all_increase_button_size_text"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
 
             <Button
-                android:id="@+id/button_increase_time_one_hour"
-                android:layout_width="0dp"
+                android:id="@+id/button_reset"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:layout_weight="1"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/all_rounded_border_button_green"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:text="@string/label_add_time_one_hour"
+                android:text="@string/all_button_reset"
                 android:textColor="@color/green"
-                android:textSize="@dimen/all_increase_button_size_text"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/button_increase_time_thirty_minutes"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:layout_weight="1"
-                android:background="@drawable/all_rounded_border_button_green"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:text="@string/label_add_time_thirty_minutes"
-                android:textColor="@color/green"
-                android:textSize="@dimen/all_increase_button_size_text"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/button_increase_time_fifteen_minutes"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:layout_weight="1"
-                android:background="@drawable/all_rounded_border_button_green"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:text="@string/label_add_time_fifteen_minutes"
-                android:textColor="@color/green"
-                android:textSize="@dimen/all_increase_button_size_text"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/button_increase_time_five_minutes"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:layout_weight="1"
-                android:background="@drawable/all_rounded_border_button_green"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:text="@string/label_add_time_five_minutes"
-                android:textColor="@color/green"
-                android:textSize="@dimen/all_increase_button_size_text"
-                android:textStyle="bold" />
+                android:textSize="20sp" />
 
         </LinearLayout>
-
-        <Button
-            android:id="@+id/button_reset"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:enabled="false"
-            android:background="@drawable/all_rounded_border_button_green"
-            android:text="@string/all_button_reset"
-            android:textColor="@color/green"
-            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/tv_current_time"
@@ -124,14 +133,36 @@
             android:textSize="36sp" />
 
 
-        <Button
-            android:id="@+id/bt_start_stop_time"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/all_rounded_button_green"
-            android:text="@string/all_button_start"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
+            android:orientation="horizontal"
+            android:padding="2dp">
+
+            <Button
+                android:id="@+id/button_save_current_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:background="@drawable/all_rounded_border_button_green"
+                android:text="@string/all_button_save_current_time"
+                android:textColor="@color/green"
+                android:textSize="20sp"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/bt_start_stop_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:background="@drawable/all_rounded_button_green"
+                android:text="@string/all_button_start"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+        </LinearLayout>
+
     </LinearLayout>
 
 

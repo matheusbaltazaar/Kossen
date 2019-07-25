@@ -129,6 +129,12 @@ public class Chronometer {
         return hasStarted;
     }
 
+    public boolean hasTarget() {
+        return (goalTimeHours > 0
+                && goalTimeMinutes > 0
+                && goalTimeSeconds > 0);
+    }
+
     public void setTimeListener(TimeListener listener) {
         this.mListener = listener;
     }

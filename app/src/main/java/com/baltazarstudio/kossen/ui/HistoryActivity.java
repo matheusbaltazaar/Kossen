@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.baltazarstudio.kossen.R;
 import com.baltazarstudio.kossen.database.Database;
-import com.baltazarstudio.kossen.model.Meta;
+import com.baltazarstudio.kossen.model.Daimoku;
 import com.baltazarstudio.kossen.ui.adapter.MetaAdapter;
 
 import java.util.List;
@@ -23,39 +23,39 @@ public class HistoryActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Database database = new Database(this);
-        List<Meta> metas = database.getAllGoals();
+        List<Daimoku> daimokuList = database.getAllDaimoku();
 
 
         TextView totalTime = findViewById(R.id.history_total_time);
-        totalTime.setText(formatTimeTotal(metas));
+        totalTime.setText(getTotalTimeFormatted(daimokuList));
 
         ListView listHistorico = findViewById(R.id.listview_history);
-        listHistorico.setAdapter(new MetaAdapter(this, metas));
+        listHistorico.setAdapter(new MetaAdapter(this, daimokuList));
 
 
     }
 
-    private String formatTimeTotal(List<Meta> metas) {
+    private String getTotalTimeFormatted(List<Daimoku> daimokuList) {
         int horas = 0;
         int minutos = 0;
         int segundos = 0;
 
-        for (Meta meta : metas) {
+        for (Daimoku daimoku : daimokuList) {
             // PADRÃO DURAÇÃO >> ##:##:##
 
-            segundos += Integer.parseInt(meta.getDuracao().substring(6)); // Segundos;
+            segundos += Integer.parseInt(daimoku.getDuracao().substring(6)); // Segundos;
             if (segundos > 59) {
                 minutos++;
                 segundos = 60 - segundos;
             }
 
-            minutos += Integer.parseInt(meta.getDuracao().substring(3, 5)); // Minutos
+            minutos += Integer.parseInt(daimoku.getDuracao().substring(3, 5)); // Minutos
             if (minutos > 59) {
                 horas++;
                 minutos = 60 - minutos;
             }
 
-            horas += Integer.parseInt(meta.getDuracao().substring(0, 2)); // Horas
+            horas += Integer.parseInt(daimoku.getDuracao().substring(0, 2)); // Horas
 
         }
 

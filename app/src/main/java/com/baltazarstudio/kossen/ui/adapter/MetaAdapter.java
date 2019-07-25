@@ -9,27 +9,27 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.baltazarstudio.kossen.R;
-import com.baltazarstudio.kossen.model.Meta;
+import com.baltazarstudio.kossen.model.Daimoku;
 
 import java.util.List;
 
 public class MetaAdapter extends BaseAdapter {
     private final Context context;
-    private final List<Meta> metas;
+    private final List<Daimoku> list;
 
-    public MetaAdapter(Context context, List<Meta> metas) {
+    public MetaAdapter(Context context, List<Daimoku> daimokuList) {
         this.context = context;
-        this.metas = metas;
+        this.list = daimokuList;
     }
 
     @Override
     public int getCount() {
-        return metas.size();
+        return list.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return metas.get(position);
+        return list.get(position);
     }
 
     @Override
@@ -51,8 +51,8 @@ public class MetaAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.duracao.setText(metas.get(position).getDuracao());
-        holder.data.setText(metas.get(position).getData());
+        holder.duracao.setText(list.get(position).getDuracao());
+        holder.data.setText(list.get(position).getData());
 
         convertView.setTag(holder);
         return convertView;

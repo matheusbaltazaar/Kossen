@@ -1,6 +1,6 @@
 package com.baltazarstudio.kossen.model;
 
-public class Meta {
+public class Daimoku {
     private String duracao;
     private String data;
 

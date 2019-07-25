@@ -12,8 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baltazarstudio.kossen.R;
+import com.baltazarstudio.kossen.component.AnimationBehavior;
 import com.baltazarstudio.kossen.component.Chronometer;
 import com.baltazarstudio.kossen.database.Database;
 import com.baltazarstudio.kossen.model.Sounds;
@@ -29,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView labelGoalTime;
     private TextView labelCurrentTime;
-    private Button buttonReset;
+
+    private Button buttonSave;
     private Button buttonStartStop;
 
 
@@ -38,11 +41,6 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences preferences;
 
     private Chronometer mChronometer;
-    private Button buttonIncreaseOneHour;
-    private Button buttonIncreaseThirtyMinutes;
-    private Button buttonIncreaseFifteenMinutes;
-    private Button buttonIncreaseFiveMinutes;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +49,14 @@ public class MainActivity extends AppCompatActivity {
 
         preferences = getSharedPreferences("prefs", MODE_PRIVATE);
 
+        setUpChronometer();
+        setUpView();
+    }
+
+    private void setUpView() {
         labelGoalTime = findViewById(R.id.tv_goal_time);
 
-        buttonIncreaseOneHour = findViewById(R.id.button_increase_time_one_hour);
+        Button buttonIncreaseOneHour = findViewById(R.id.button_increase_time_one_hour);
         buttonIncreaseOneHour.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        buttonIncreaseThirtyMinutes = findViewById(R.id.button_increase_time_thirty_minutes);
+        Button buttonIncreaseThirtyMinutes = findViewById(R.id.button_increase_time_thirty_minutes);
         buttonIncreaseThirtyMinutes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        buttonIncreaseFifteenMinutes = findViewById(R.id.button_increase_time_fifteen_minutes);
+        Button buttonIncreaseFifteenMinutes = findViewById(R.id.button_increase_time_fifteen_minutes);
         buttonIncreaseFifteenMinutes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        buttonIncreaseFiveMinutes = findViewById(R.id.button_increase_time_five_minutes);
+        Button buttonIncreaseFiveMinutes = findViewById(R.id.button_increase_time_five_minutes);
         buttonIncreaseFiveMinutes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -89,14 +92,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        buttonReset = findViewById(R.id.button_reset);
+        final Button buttonReset = findViewById(R.id.button_reset);
         buttonReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mChronometer.hasStarted())
+                if (mChronometer.hasStarted()) {
                     createResetAlert();
-                else
+                } else {
                     restoreClock();
+                }
             }
         });
 
@@ -110,17 +114,30 @@ public class MainActivity extends AppCompatActivity {
                     mChronometer.stop();
                     buttonStartStop.setText(R.string.all_button_start);
                     toggleUIComponents(true);
+                    buttonReset.setEnabled(true);
+                    AnimationBehavior.show(findViewById(R.id.layout_goal_time_stopped), AnimationBehavior.FADE_IN);
+                    AnimationBehavior.hide(findViewById(R.id.layout_goal_time_running), AnimationBehavior.FADE_OUT);
                 } else {
                     mChronometer.resume();
                     buttonStartStop.setText(R.string.all_button_stop);
                     toggleUIComponents(false);
+                    buttonReset.setEnabled(false);
+                    AnimationBehavior.show(findViewById(R.id.layout_goal_time_running), AnimationBehavior.FADE_IN);
+                    AnimationBehavior.hide(findViewById(R.id.layout_goal_time_stopped), AnimationBehavior.FADE_OUT);
                 }
             }
         });
 
+        buttonSave = findViewById(R.id.button_save_current_time);
+        buttonSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createDialogConfirmRegister();
+            }
+        });
 
-        setUpChronometer();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -162,36 +179,75 @@ public class MainActivity extends AppCompatActivity {
         labelCurrentTime.setText(mChronometer.getCurrentTime());
         labelGoalTime.setText(mChronometer.getGoalTime());
         buttonStartStop.setText(R.string.all_button_start);
-        toggleUIComponents(true);
+        buttonStartStop.setEnabled(true);
+        AnimationBehavior.hide(buttonSave, AnimationBehavior.FADE_OUT);
     }
 
     private void toggleUIComponents(boolean enabled) {
-        buttonReset.setEnabled(enabled);
-        buttonIncreaseFiveMinutes.setEnabled(enabled);
-        buttonIncreaseFifteenMinutes.setEnabled(enabled);
-        buttonIncreaseThirtyMinutes.setEnabled(enabled);
-        buttonIncreaseOneHour.setEnabled(enabled);
+        if (!enabled) {
+            AnimationBehavior.hide(
+                    findViewById(R.id.layout_clock_functions_buttons),
+                    AnimationBehavior.FADE_OUT);
+
+            if (!mChronometer.hasTarget()) {
+                AnimationBehavior.hide(
+                        buttonSave,
+                        AnimationBehavior.FADE_OUT);
+            }
+
+        } else {
+            AnimationBehavior.show(
+                    findViewById(R.id.layout_clock_functions_buttons),
+                    AnimationBehavior.FADE_IN);
+
+                AnimationBehavior.show(
+                        buttonSave,
+                        AnimationBehavior.FADE_IN);
+
+
+        }
     }
 
     private void createDialogGoalReached() {
-        Locale mLocale = new Locale("pt", "BR");
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", mLocale);
-        final String now = sdf.format(Calendar.getInstance().getTime());
-
         new AlertDialog.Builder(this)
                 .setCancelable(false)
                 .setTitle(R.string.all_label_goal_reached)
-                .setMessage(String.format("Tempo: %s", now))
                 .setNeutralButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Database database = new Database(MainActivity.this);
-                        database.register(labelCurrentTime.getText().toString(), now);
+                        register();
                         stopSound();
                         dialog.dismiss();
                     }
                 })
                 .create().show();
+    }
+
+    private void createDialogConfirmRegister() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.all_dialog_title_confirm_register)
+                .setMessage(R.string.all_dialog_message_confirm_register)
+                .setPositiveButton("SIM", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mChronometer.stop();
+                        register();
+                        Toast.makeText(MainActivity.this, "Tempo registrado! =)", Toast.LENGTH_LONG).show();
+                        toggleUIComponents(true);
+                        buttonStartStop.setEnabled(false);
+                    }
+                })
+                .setNegativeButton("NÃO", null)
+                .create().show();
+    }
+
+    private void register() {
+        Locale mLocale = new Locale("pt", "BR");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", mLocale);
+        final String now = sdf.format(Calendar.getInstance().getTime());
+
+        Database database = new Database(MainActivity.this);
+        database.register(mChronometer.getCurrentTime(), now);
     }
 
     private void playSound() {

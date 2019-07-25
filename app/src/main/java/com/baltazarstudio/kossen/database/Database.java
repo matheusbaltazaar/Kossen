@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 
-import com.baltazarstudio.kossen.model.Meta;
+import com.baltazarstudio.kossen.model.Daimoku;
 
 import java.util.ArrayList;
 
@@ -17,6 +17,7 @@ public class Database extends SQLiteOpenHelper {
     private static final String NOME_BANCO = "kossenDB";
 
     private static final String TABELA_HISTORICO = "Historico";
+
     private static final String HISTORICO_DURACAO = "duracao";
     private static final String HISTORICO_DATA = "data";
 
@@ -64,24 +65,24 @@ public class Database extends SQLiteOpenHelper {
 
     }
 
-    public ArrayList<Meta> getAllGoals() {
+    public ArrayList<Daimoku> getAllDaimoku() {
         String sql = "SELECT * FROM " + TABELA_HISTORICO;
-        ArrayList<Meta> metas = new ArrayList<>();
+        ArrayList<Daimoku> daimokuList = new ArrayList<>();
 
         Cursor cursor = getReadableDatabase().rawQuery(sql, null);
         // ORDEM INVERSA
         if (cursor.move(cursor.getCount())) {
             do {
-                Meta meta = new Meta();
-                meta.setDuracao(cursor.getString(cursor.getColumnIndex(HISTORICO_DURACAO)));
-                meta.setData(cursor.getString(cursor.getColumnIndex(HISTORICO_DATA)));
+                Daimoku daimoku = new Daimoku();
+                daimoku.setDuracao(cursor.getString(cursor.getColumnIndex(HISTORICO_DURACAO)));
+                daimoku.setData(cursor.getString(cursor.getColumnIndex(HISTORICO_DATA)));
 
-                metas.add(meta);
+                daimokuList.add(daimoku);
             } while (cursor.moveToPrevious());
         }
         cursor.close();
 
-        return metas;
+        return daimokuList;
     }
 
 
