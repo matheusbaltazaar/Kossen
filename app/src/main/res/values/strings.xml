@@ -31,6 +31,7 @@
     <string name="all_alert_edittext_hint_info">Você pode escrever o motivo do daimoku, o itai-doshin etc… Fique a vontade =)</string>
     <string name="all_alert_label_info">Informações</string>
     <string name="all_alert_label_register_when">Data:</string>
+    <string name="all_history_label_daimoku_not_found">Não há daimoku registrado.</string>
 
     <string-array name="array_sounds">
         <item>Camila Cabello Havana</item>

@@ -30,20 +30,22 @@ public class HistoryActivity extends AppCompatActivity {
         Database database = new Database(this);
         List<Daimoku> daimokuList = database.getAllDaimoku();
 
-
         TextView totalTime = findViewById(R.id.history_total_time);
         totalTime.setText(getTotalTimeFormatted(daimokuList));
 
-        ListView listHistorico = findViewById(R.id.listview_history);
-        listHistorico.setAdapter(new MetaAdapter(this, daimokuList));
-        listHistorico.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Daimoku daimoku = (Daimoku) adapterView.getAdapter().getItem(i);
-                createDialogDaimoku(daimoku);
-            }
-        });
-
+        if (daimokuList.size() != 0) {
+            ListView listHistorico = findViewById(R.id.listview_history);
+            listHistorico.setAdapter(new MetaAdapter(this, daimokuList));
+            listHistorico.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Daimoku daimoku = (Daimoku) adapterView.getAdapter().getItem(i);
+                    createDialogDaimoku(daimoku);
+                }
+            });
+        } else {
+            findViewById(R.id.tv_daimoku_not_found).setVisibility(View.VISIBLE);
+        }
 
     }
 
