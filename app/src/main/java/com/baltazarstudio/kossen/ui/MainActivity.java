@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         preferences = getSharedPreferences("prefs", MODE_PRIVATE);
-
         setUpChronometer();
         setUpView();
     }
@@ -115,15 +114,15 @@ public class MainActivity extends AppCompatActivity {
                     buttonStartStop.setText(R.string.all_button_start);
                     toggleUIComponents(true);
                     buttonReset.setEnabled(true);
-                    AnimationBehavior.show(findViewById(R.id.layout_goal_time_stopped), AnimationBehavior.FADE_IN);
-                    AnimationBehavior.hide(findViewById(R.id.layout_goal_time_running), AnimationBehavior.FADE_OUT);
+                    AnimationBehavior.showFadeIn(findViewById(R.id.layout_goal_time_stopped));
+                    AnimationBehavior.hideFadeOut(findViewById(R.id.layout_goal_time_running));
                 } else {
                     mChronometer.resume();
                     buttonStartStop.setText(R.string.all_button_stop);
                     toggleUIComponents(false);
                     buttonReset.setEnabled(false);
-                    AnimationBehavior.show(findViewById(R.id.layout_goal_time_running), AnimationBehavior.FADE_IN);
-                    AnimationBehavior.hide(findViewById(R.id.layout_goal_time_stopped), AnimationBehavior.FADE_OUT);
+                    AnimationBehavior.showFadeIn(findViewById(R.id.layout_goal_time_running));
+                    AnimationBehavior.hideFadeOut(findViewById(R.id.layout_goal_time_stopped));
                 }
             }
         });
@@ -180,31 +179,18 @@ public class MainActivity extends AppCompatActivity {
         labelGoalTime.setText(mChronometer.getGoalTime());
         buttonStartStop.setText(R.string.all_button_start);
         buttonStartStop.setEnabled(true);
-        AnimationBehavior.hide(buttonSave, AnimationBehavior.FADE_OUT);
+        AnimationBehavior.hideFadeOut(buttonSave);
     }
 
     private void toggleUIComponents(boolean enabled) {
         if (!enabled) {
-            AnimationBehavior.hide(
-                    findViewById(R.id.layout_clock_functions_buttons),
-                    AnimationBehavior.FADE_OUT);
+            AnimationBehavior.hideFadeOut(findViewById(R.id.layout_clock_functions_buttons));
 
-            if (!mChronometer.hasTarget()) {
-                AnimationBehavior.hide(
-                        buttonSave,
-                        AnimationBehavior.FADE_OUT);
-            }
-
+            if (!mChronometer.hasTarget())
+                AnimationBehavior.hideFadeOut(buttonSave);
         } else {
-            AnimationBehavior.show(
-                    findViewById(R.id.layout_clock_functions_buttons),
-                    AnimationBehavior.FADE_IN);
-
-                AnimationBehavior.show(
-                        buttonSave,
-                        AnimationBehavior.FADE_IN);
-
-
+            AnimationBehavior.showFadeIn(findViewById(R.id.layout_clock_functions_buttons));
+            AnimationBehavior.showFadeIn(buttonSave);
         }
     }
 
