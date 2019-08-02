@@ -47,12 +47,22 @@ public class MetaAdapter extends BaseAdapter {
 
             holder.duracao = convertView.findViewById(R.id.meta_list_item_duracao);
             holder.data = convertView.findViewById(R.id.meta_list_item_data);
+            holder.informacao = convertView.findViewById(R.id.meta_list_item_info);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
         holder.duracao.setText(list.get(position).getDuracao());
         holder.data.setText(list.get(position).getData());
+
+        String info = list.get(position).getInformacao();
+        if (info != null && !info.equals("")) {
+            if (info.length() > 50) {
+                info = info.substring(0, 50) + "...";
+            }
+            holder.informacao.setVisibility(View.VISIBLE);
+            holder.informacao.setText(info);
+        }
 
         convertView.setTag(holder);
         return convertView;
@@ -61,5 +71,6 @@ public class MetaAdapter extends BaseAdapter {
     private static class ViewHolder {
         TextView data;
         TextView duracao;
+        TextView informacao;
     }
 }

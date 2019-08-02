@@ -1,8 +1,13 @@
 package com.baltazarstudio.kossen.ui;
 
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -31,8 +36,35 @@ public class HistoryActivity extends AppCompatActivity {
 
         ListView listHistorico = findViewById(R.id.listview_history);
         listHistorico.setAdapter(new MetaAdapter(this, daimokuList));
+        listHistorico.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Daimoku daimoku = (Daimoku) adapterView.getAdapter().getItem(i);
+                createDialogDaimoku(daimoku);
+            }
+        });
 
 
+    }
+
+    private void createDialogDaimoku(Daimoku daimoku) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.daimoku_details, null);
+
+        dialogView.findViewById(R.id.ll_layout_when).setVisibility(View.VISIBLE);
+        TextView tvWhen = dialogView.findViewById(R.id.tv_alert_when);
+        tvWhen.setText(daimoku.getData());
+
+        TextView tvTime = dialogView.findViewById(R.id.tv_alert_time);
+        tvTime.setText(daimoku.getDuracao());
+
+        EditText etInfo = dialogView.findViewById(R.id.et_daimuku_info);
+        etInfo.setText(daimoku.getInformacao());
+        etInfo.setFocusable(false);
+
+
+        new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create().show();
     }
 
     private String getTotalTimeFormatted(List<Daimoku> daimokuList) {

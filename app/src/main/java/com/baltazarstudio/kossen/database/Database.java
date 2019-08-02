@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteStatement;
 import com.baltazarstudio.kossen.model.Daimoku;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Database extends SQLiteOpenHelper {
 
@@ -20,6 +21,7 @@ public class Database extends SQLiteOpenHelper {
 
     private static final String HISTORICO_DURACAO = "duracao";
     private static final String HISTORICO_DATA = "data";
+    private static final String HISTORICO_INFORMACAO = "informacao";
 
     private SQLiteStatement stmtInsertHistory;
 
@@ -35,7 +37,8 @@ public class Database extends SQLiteOpenHelper {
 
         String create_table_history = "CREATE TABLE " + TABELA_HISTORICO + " (";
         create_table_history += HISTORICO_DURACAO + " TEXT,";
-        create_table_history += HISTORICO_DATA + " TEXT)";
+        create_table_history += HISTORICO_DATA + " TEXT,";
+        create_table_history += HISTORICO_INFORMACAO + " TEXT)";
 
         db.execSQL(create_table_history);
     }
@@ -49,17 +52,19 @@ public class Database extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         stmtInsertHistory = db.compileStatement("INSERT INTO " + TABELA_HISTORICO + "("
                 + HISTORICO_DURACAO + ","
-                + HISTORICO_DATA + ")"
-                + " VALUES (?, ?)"
+                + HISTORICO_DATA + ","
+                + HISTORICO_INFORMACAO + ")"
+                + " VALUES (?, ?, ?)"
         );
 
     }
 
-    public void register(String duracao, String tempo) {
+    public void register(Daimoku daimoku) {
         stmtInsertHistory.clearBindings();
 
-        stmtInsertHistory.bindString(1, duracao);
-        stmtInsertHistory.bindString(2, tempo);
+        stmtInsertHistory.bindString(1, daimoku.getDuracao());
+        stmtInsertHistory.bindString(2, daimoku.getData());
+        stmtInsertHistory.bindString(3, daimoku.getInformacao());
 
         stmtInsertHistory.executeInsert();
 
@@ -70,17 +75,18 @@ public class Database extends SQLiteOpenHelper {
         ArrayList<Daimoku> daimokuList = new ArrayList<>();
 
         Cursor cursor = getReadableDatabase().rawQuery(sql, null);
-        // ORDEM INVERSA
-        if (cursor.move(cursor.getCount())) {
-            do {
+        while (cursor.moveToNext()) {
                 Daimoku daimoku = new Daimoku();
                 daimoku.setDuracao(cursor.getString(cursor.getColumnIndex(HISTORICO_DURACAO)));
                 daimoku.setData(cursor.getString(cursor.getColumnIndex(HISTORICO_DATA)));
+                daimoku.setInformacao(cursor.getString(cursor.getColumnIndex(HISTORICO_INFORMACAO)));
 
                 daimokuList.add(daimoku);
-            } while (cursor.moveToPrevious());
         }
         cursor.close();
+
+        // ORDEM INVERSA
+        Collections.reverse(daimokuList);
 
         return daimokuList;
     }

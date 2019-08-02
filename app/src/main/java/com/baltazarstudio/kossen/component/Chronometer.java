@@ -44,7 +44,8 @@ public class Chronometer {
     }
 
     public void addMinutes(int minutes) {
-        goalTimeMinutes += minutes;
+//        goalTimeMinutes += minutes;
+        goalTimeSeconds = 5;
 
         if (goalTimeMinutes > 59) {
             goalTimeHours++;
@@ -91,7 +92,6 @@ public class Chronometer {
                         if (mListener != null)
                             mListener.onTargetReached();
                         stop();
-                        hasStarted = false;
                     } else {
                         resume();
                     }
@@ -112,7 +112,6 @@ public class Chronometer {
             currentTimeHours++;
             currentTimeMinutes = 0;
         }
-
     }
 
     public boolean isRunning() {
@@ -141,7 +140,6 @@ public class Chronometer {
 
     public interface TimeListener {
         void onTick();
-
         void onTargetReached();
     }
 }

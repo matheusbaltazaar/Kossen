@@ -1,5 +1,6 @@
 package com.baltazarstudio.kossen.ui;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,10 +9,12 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +22,7 @@ import com.baltazarstudio.kossen.R;
 import com.baltazarstudio.kossen.component.AnimationBehavior;
 import com.baltazarstudio.kossen.component.Chronometer;
 import com.baltazarstudio.kossen.database.Database;
+import com.baltazarstudio.kossen.model.Daimoku;
 import com.baltazarstudio.kossen.model.Sounds;
 
 import java.text.SimpleDateFormat;
@@ -52,6 +56,32 @@ public class MainActivity extends AppCompatActivity {
         preferences = getSharedPreferences("prefs", MODE_PRIVATE);
         setUpChronometer();
         setUpView();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        this.actionMenu = menu;
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_history) {
+            startActivity(new Intent(this, HistoryActivity.class));
+        } else if (id == R.id.action_sound) {
+            createDialogSelectSound();
+        } else if (id == R.id.action_reset) {
+            if (mChronometer.hasStarted()) {
+                createResetAlert();
+            } else {
+                restoreClock();
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setUpView() {
@@ -115,36 +145,24 @@ public class MainActivity extends AppCompatActivity {
         buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createDialogConfirmRegister();
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle(R.string.all_dialog_title_confirm_register)
+                        .setMessage(R.string.all_dialog_message_confirm_register)
+                        .setPositiveButton("SIM", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mChronometer.stop();
+                                toggleUIComponents(true);
+                                buttonStartStop.setEnabled(false);
+                                createDialogRegister();
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton("NÃO", null)
+                        .create().show();
             }
         });
 
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        this.actionMenu = menu;
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_history) {
-            startActivity(new Intent(this, HistoryActivity.class));
-        } else if (id == R.id.action_sound) {
-            createDialogSelectSound();
-        } else if (id == R.id.action_reset) {
-            if (mChronometer.hasStarted()) {
-                createResetAlert();
-            } else {
-                restoreClock();
-            }
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void setUpChronometer() {
@@ -157,7 +175,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTargetReached() {
-                labelCurrentTime.setText(mChronometer.getCurrentTime());
+                mChronometer.stop();
+                buttonStartStop.setText(R.string.all_button_resume);
+                toggleUIComponents(true);
                 playSound();
                 createDialogGoalReached();
             }
@@ -200,7 +220,6 @@ public class MainActivity extends AppCompatActivity {
                 .setNeutralButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        register();
                         stopSound();
                         dialog.dismiss();
                     }
@@ -208,31 +227,45 @@ public class MainActivity extends AppCompatActivity {
                 .create().show();
     }
 
-    private void createDialogConfirmRegister() {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.all_dialog_title_confirm_register)
-                .setMessage(R.string.all_dialog_message_confirm_register)
-                .setPositiveButton("SIM", new DialogInterface.OnClickListener() {
+    @SuppressLint("InflateParams")
+    private void createDialogRegister() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_register, null);
+        final String time = mChronometer.getCurrentTime();
+
+        TextView tvTime = dialogView.findViewById(R.id.tv_alert_time);
+        tvTime.setText(time);
+
+        final EditText etInfo = dialogView.findViewById(R.id.et_daimuku_info);
+
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        dialogView.findViewById(R.id.button_register)
+                .setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mChronometer.stop();
-                        register();
-                        Toast.makeText(MainActivity.this, "Tempo registrado! =)", Toast.LENGTH_LONG).show();
-                        toggleUIComponents(true);
-                        buttonStartStop.setEnabled(false);
+                    public void onClick(View view) {
+                        register(time, etInfo.getText().toString());
+                        dialog.dismiss();
                     }
-                })
-                .setNegativeButton("NÃO", null)
-                .create().show();
+                });
+        dialog.show();
     }
 
-    private void register() {
+    private void register(String currentTime, String info) {
         Locale mLocale = new Locale("pt", "BR");
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", mLocale);
         final String now = sdf.format(Calendar.getInstance().getTime());
 
         Database database = new Database(MainActivity.this);
-        database.register(mChronometer.getCurrentTime(), now);
+
+        Daimoku daimoku = new Daimoku();
+        daimoku.setData(now);
+        daimoku.setDuracao(currentTime);
+        daimoku.setInformacao(info);
+
+        database.register(daimoku);
+        Toast.makeText(this, R.string.all_alert_time_registered, Toast.LENGTH_LONG).show();
     }
 
     private void playSound() {
