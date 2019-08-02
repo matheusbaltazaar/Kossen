@@ -10,17 +10,12 @@ public class AnimationBehavior {
 
     private static final int SHOW = 0;
     private static final int HIDE = 1;
-    private static int mBehavior;
-    private static Animation.AnimationListener listener;
 
-    private static void run(int behavior, View view, int animation) {
-        mBehavior = behavior;
-        initListener(view);
-
+    private static void run(final int behavior, final View view, final int animation) {
         Animation mAnimation = AnimationUtils.loadAnimation(
                 view.getContext(),
                 animation);
-        mAnimation.setAnimationListener(listener);
+        mAnimation.setAnimationListener(initListener(view, behavior));
         view.startAnimation(mAnimation);
     }
 
@@ -32,18 +27,18 @@ public class AnimationBehavior {
         run(HIDE, view, R.anim.fade_out);
     }
 
-    private static void initListener(final View view) {
-        listener = new Animation.AnimationListener() {
+    private static Animation.AnimationListener initListener(final View view, final int behavior) {
+        return new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                if (mBehavior == SHOW) {
+                if (behavior == SHOW) {
                     view.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                if (mBehavior == HIDE) {
+                if (behavior == HIDE) {
                     view.setVisibility(View.GONE);
                 }
             }

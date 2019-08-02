@@ -36,7 +36,7 @@
         android:layout_weight="1"
         android:gravity="end"
         android:layout_gravity="center"
-        android:textColor="@color/green"
+        android:textColor="@color/colorPrimary"
         android:text="01:25:00"
         android:textSize="20sp" />
 

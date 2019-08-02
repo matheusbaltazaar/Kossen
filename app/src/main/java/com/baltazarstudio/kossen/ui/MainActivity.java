@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences preferences;
 
     private Chronometer mChronometer;
+    private Menu actionMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,18 +93,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final Button buttonReset = findViewById(R.id.button_reset);
-        buttonReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mChronometer.hasStarted()) {
-                    createResetAlert();
-                } else {
-                    restoreClock();
-                }
-            }
-        });
-
         labelCurrentTime = findViewById(R.id.tv_current_time);
 
         buttonStartStop = findViewById(R.id.bt_start_stop_time);
@@ -113,16 +103,10 @@ public class MainActivity extends AppCompatActivity {
                     mChronometer.stop();
                     buttonStartStop.setText(R.string.all_button_start);
                     toggleUIComponents(true);
-                    buttonReset.setEnabled(true);
-                    AnimationBehavior.showFadeIn(findViewById(R.id.layout_goal_time_stopped));
-                    AnimationBehavior.hideFadeOut(findViewById(R.id.layout_goal_time_running));
                 } else {
                     mChronometer.resume();
                     buttonStartStop.setText(R.string.all_button_stop);
                     toggleUIComponents(false);
-                    buttonReset.setEnabled(false);
-                    AnimationBehavior.showFadeIn(findViewById(R.id.layout_goal_time_running));
-                    AnimationBehavior.hideFadeOut(findViewById(R.id.layout_goal_time_stopped));
                 }
             }
         });
@@ -141,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        this.actionMenu = menu;
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -152,6 +137,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, HistoryActivity.class));
         } else if (id == R.id.action_sound) {
             createDialogSelectSound();
+        } else if (id == R.id.action_reset) {
+            if (mChronometer.hasStarted()) {
+                createResetAlert();
+            } else {
+                restoreClock();
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -174,23 +165,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void restoreClock() {
-        mChronometer.reset();
-        labelCurrentTime.setText(mChronometer.getCurrentTime());
-        labelGoalTime.setText(mChronometer.getGoalTime());
-        buttonStartStop.setText(R.string.all_button_start);
-        buttonStartStop.setEnabled(true);
-        AnimationBehavior.hideFadeOut(buttonSave);
+        if (mChronometer.hasStarted()) {
+            mChronometer.reset();
+            labelCurrentTime.setText(mChronometer.getCurrentTime());
+            labelGoalTime.setText(mChronometer.getGoalTime());
+            buttonStartStop.setText(R.string.all_button_start);
+            buttonStartStop.setEnabled(true);
+            AnimationBehavior.hideFadeOut(buttonSave);
+            Snackbar.make(buttonStartStop, R.string.all_alert_clock_reseted, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private void toggleUIComponents(boolean enabled) {
         if (!enabled) {
             AnimationBehavior.hideFadeOut(findViewById(R.id.layout_clock_functions_buttons));
 
-            if (!mChronometer.hasTarget())
+            if (!mChronometer.hasTarget()) {
                 AnimationBehavior.hideFadeOut(buttonSave);
+            }
         } else {
             AnimationBehavior.showFadeIn(findViewById(R.id.layout_clock_functions_buttons));
             AnimationBehavior.showFadeIn(buttonSave);
+        }
+
+        for (int i = 0; i < actionMenu.size(); i++) {
+            actionMenu.getItem(i).setEnabled(enabled);
         }
     }
 

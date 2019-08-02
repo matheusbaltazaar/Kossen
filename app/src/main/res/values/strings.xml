@@ -5,7 +5,7 @@
     <string name="all_menu_action_restart">Reiniciar</string>
     <string name="all_menu_action_history">Histórico de Daimoku</string>
     <string name="all_menu_action_sound">Alterar toque</string>
-    <string name="all_label_meta">Meta:</string>
+    <string name="all_label_meta">Meta</string>
     <string name="all_label_time_choose_placeholder">00</string>
     <string name="all_button_start">INICIAR</string>
     <string name="all_button_stop">PARAR</string>
@@ -23,7 +23,7 @@
     <string name="label_add_time_thirty_minutes">+30m</string>
     <string name="label_add_time_fifteen_minutes">+15m</string>
     <string name="label_add_time_five_minutes">+5m</string>
-    <string name="all_button_reset">RESTAURAR</string>
+    <string name="all_menu_action_reset">Restaurar</string>
     <string name="title_activity_history">Histórico</string>
     <string name="history_total_time_label">Tempo Total:</string>
     <string name="all_history_total_time_placeholder">0 horas, 0 minutos e 0 segundos</string>
@@ -31,6 +31,7 @@
     <string name="all_button_save_current_time">SALVAR</string>
     <string name="all_dialog_title_confirm_register">Confirmar</string>
     <string name="all_dialog_message_confirm_register">Deseja registrar o tempo atual ?</string>
+    <string name="all_alert_clock_reseted">Contagem restaurada! =)</string>
 
     <string-array name="array_sounds">
         <item>Camila Cabello Havana</item>
