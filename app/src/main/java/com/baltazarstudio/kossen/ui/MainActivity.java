@@ -185,15 +185,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void restoreClock() {
-        if (mChronometer.hasStarted()) {
-            mChronometer.reset();
-            labelCurrentTime.setText(mChronometer.getCurrentTime());
-            labelGoalTime.setText(mChronometer.getGoalTime());
-            buttonStartStop.setText(R.string.all_button_start);
-            buttonStartStop.setEnabled(true);
-            AnimationBehavior.hideFadeOut(buttonSave);
-            Snackbar.make(buttonStartStop, R.string.all_alert_clock_reseted, Snackbar.LENGTH_LONG).show();
-        }
+        mChronometer.reset();
+        labelCurrentTime.setText(mChronometer.getCurrentTime());
+        labelGoalTime.setText(mChronometer.getGoalTime());
+        buttonStartStop.setText(R.string.all_button_start);
+        buttonStartStop.setEnabled(true);
+        AnimationBehavior.hideFadeOut(buttonSave);
+        Snackbar.make(buttonStartStop, R.string.all_alert_clock_reseted, Snackbar.LENGTH_LONG).show();
     }
 
     private void toggleUIComponents(boolean enabled) {
