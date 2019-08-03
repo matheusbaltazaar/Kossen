@@ -44,8 +44,8 @@ public class Chronometer {
     }
 
     public void addMinutes(int minutes) {
-//        goalTimeMinutes += minutes;
-        goalTimeSeconds = 5;
+        goalTimeMinutes += minutes;
+//        goalTimeSeconds = 5;
 
         if (goalTimeMinutes > 59) {
             goalTimeHours++;

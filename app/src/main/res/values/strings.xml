@@ -32,6 +32,9 @@
     <string name="all_alert_label_info">Informações</string>
     <string name="all_alert_label_register_when">Data:</string>
     <string name="all_history_label_daimoku_not_found">Não há daimoku registrado.</string>
+    <string name="all_history_toast_item_removed">Item removido</string>
+    <string name="all_dialog_message_confirm_delete">Remover o daimoku ?</string>
+    <string name="all_dialog_title_confirm_delete">Confirmar</string>
 
     <string-array name="array_sounds">
         <item>Camila Cabello Havana</item>

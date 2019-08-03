@@ -22,6 +22,7 @@ public class Database extends SQLiteOpenHelper {
     private static final String HISTORICO_DURACAO = "duracao";
     private static final String HISTORICO_DATA = "data";
     private static final String HISTORICO_INFORMACAO = "informacao";
+    private static final String HISTORICO_ID = "id";
 
     private SQLiteStatement stmtInsertHistory;
 
@@ -36,6 +37,7 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABELA_HISTORICO);
 
         String create_table_history = "CREATE TABLE " + TABELA_HISTORICO + " (";
+        create_table_history += HISTORICO_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,";
         create_table_history += HISTORICO_DURACAO + " TEXT,";
         create_table_history += HISTORICO_DATA + " TEXT,";
         create_table_history += HISTORICO_INFORMACAO + " TEXT)";
@@ -77,6 +79,7 @@ public class Database extends SQLiteOpenHelper {
         Cursor cursor = getReadableDatabase().rawQuery(sql, null);
         while (cursor.moveToNext()) {
                 Daimoku daimoku = new Daimoku();
+                daimoku.setId(cursor.getInt(cursor.getColumnIndex(HISTORICO_ID)));
                 daimoku.setDuracao(cursor.getString(cursor.getColumnIndex(HISTORICO_DURACAO)));
                 daimoku.setData(cursor.getString(cursor.getColumnIndex(HISTORICO_DATA)));
                 daimoku.setInformacao(cursor.getString(cursor.getColumnIndex(HISTORICO_INFORMACAO)));
@@ -92,4 +95,11 @@ public class Database extends SQLiteOpenHelper {
     }
 
 
+    public void remove(Daimoku daimoku) {
+        String sql = "DELETE * FROM " + TABELA_HISTORICO
+                + " WHERE "
+                + HISTORICO_ID + " = " + daimoku.getId();
+
+        getWritableDatabase().execSQL(sql);
+    }
 }
