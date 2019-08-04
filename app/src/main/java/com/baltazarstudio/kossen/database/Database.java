@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteStatement;
 import com.baltazarstudio.kossen.model.Daimoku;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Database extends SQLiteOpenHelper {
 
@@ -19,10 +18,10 @@ public class Database extends SQLiteOpenHelper {
 
     private static final String TABELA_HISTORICO = "Historico";
 
-    private static final String HISTORICO_DURACAO = "duracao";
-    private static final String HISTORICO_DATA = "data";
-    private static final String HISTORICO_INFORMACAO = "informacao";
     private static final String HISTORICO_ID = "id";
+    private static final String HISTORICO_DATA = "data";
+    private static final String HISTORICO_DURACAO = "duracao";
+    private static final String HISTORICO_INFORMACAO = "informacao";
 
     private SQLiteStatement stmtInsertHistory;
 
@@ -73,27 +72,24 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public ArrayList<Daimoku> getAllDaimoku() {
-        String sql = "SELECT * FROM " + TABELA_HISTORICO;
+        String sql = "SELECT * FROM " + TABELA_HISTORICO
+                + " ORDER BY " + HISTORICO_ID + " DESC";
         ArrayList<Daimoku> daimokuList = new ArrayList<>();
 
         Cursor cursor = getReadableDatabase().rawQuery(sql, null);
         while (cursor.moveToNext()) {
-                Daimoku daimoku = new Daimoku();
-                daimoku.setId(cursor.getInt(cursor.getColumnIndex(HISTORICO_ID)));
-                daimoku.setDuracao(cursor.getString(cursor.getColumnIndex(HISTORICO_DURACAO)));
-                daimoku.setData(cursor.getString(cursor.getColumnIndex(HISTORICO_DATA)));
-                daimoku.setInformacao(cursor.getString(cursor.getColumnIndex(HISTORICO_INFORMACAO)));
+            Daimoku daimoku = new Daimoku();
+            daimoku.setId(cursor.getInt(cursor.getColumnIndex(HISTORICO_ID)));
+            daimoku.setDuracao(cursor.getString(cursor.getColumnIndex(HISTORICO_DURACAO)));
+            daimoku.setData(cursor.getString(cursor.getColumnIndex(HISTORICO_DATA)));
+            daimoku.setInformacao(cursor.getString(cursor.getColumnIndex(HISTORICO_INFORMACAO)));
 
-                daimokuList.add(daimoku);
+            daimokuList.add(daimoku);
         }
         cursor.close();
 
-        // ORDEM INVERSA
-        Collections.reverse(daimokuList);
-
         return daimokuList;
     }
-
 
     public void remove(Daimoku daimoku) {
         String sql = "DELETE * FROM " + TABELA_HISTORICO
