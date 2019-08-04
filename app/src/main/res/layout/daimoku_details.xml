@@ -1,77 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="4dp">
-
-    <LinearLayout
-        android:id="@+id/ll_layout_when"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:text="@string/all_alert_label_register_when"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tv_alert_when"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:text="11:85:44"
-            android:textColor="@color/colorPrimary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+    android:padding="4dp"
+    tools:ignore="ContentDescription">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ll_dialog_when"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="@string/all_alert_label_register_when"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_dialog_when"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="@string/all_alert_label_register_time"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_alert_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            android:text="@string/all_alert_label_register_time"
+            android:text="@string/all_alert_label_info"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tv_alert_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <EditText
+            android:id="@+id/et_daimuku_info"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
             android:layout_margin="4dp"
-            android:text="11:85:44"
-            android:textColor="@color/colorPrimary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:background="@drawable/background_edittext_daimoku_info"
+            android:ems="10"
+            android:gravity="start|top"
+            android:hint="@string/all_alert_edittext_hint_info"
+            android:inputType="textMultiLine"
+            android:padding="4dp"
+            tools:ignore="Autofill" />
     </LinearLayout>
 
-
-    <TextView
+    <ImageView
+        android:id="@+id/ib_dialog_remove_daimoku"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        android:text="@string/all_alert_label_info"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/et_daimuku_info"
-        android:layout_width="match_parent"
-        android:layout_height="160dp"
-        android:layout_margin="4dp"
-        android:background="@drawable/background_edittext_daimoku_info"
-        android:ems="10"
-        android:gravity="start|top"
-        android:hint="@string/all_alert_edittext_hint_info"
-        android:inputType="textMultiLine"
-        android:padding="4dp" />
-
-</LinearLayout>
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_remove" />
+</RelativeLayout>

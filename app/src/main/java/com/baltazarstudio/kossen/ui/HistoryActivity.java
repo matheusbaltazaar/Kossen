@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,16 +34,11 @@ public class HistoryActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         database = new Database(this);
-        List<Daimoku> daimokuList = database.getAllDaimoku();
-
-        TextView totalTime = findViewById(R.id.history_total_time);
-        totalTime.setText(calculateTotalTime(daimokuList));
-
-        updateDaimokuList(daimokuList);
+        setUpDaimokuList(database.getAllDaimoku());
     }
 
 
-    private void updateDaimokuList(List<Daimoku> daimokuList) {
+    private void setUpDaimokuList(List<Daimoku> daimokuList) {
         if (daimokuList.size() != 0) {
             final ListView listHistorico = findViewById(R.id.listview_history);
             listHistorico.setAdapter(new MetaAdapter(this, daimokuList));
@@ -53,20 +49,15 @@ public class HistoryActivity extends AppCompatActivity {
                     createDialogDaimoku(daimoku);
                 }
             });
-            listHistorico.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(final AdapterView<?> adapterView, View view, int i, long l) {
-                    Daimoku daimoku = (Daimoku) adapterView.getAdapter().getItem(i);
-                    createAlertRemoveDaimoku(daimoku);
-                    return false;
-                }
-            });
         } else {
             findViewById(R.id.tv_daimoku_not_found).setVisibility(View.VISIBLE);
         }
+
+        TextView totalTime = findViewById(R.id.history_total_time);
+        totalTime.setText(calculateTotalTime(daimokuList));
     }
 
-    private void createAlertRemoveDaimoku(final Daimoku daimoku) {
+    private void createAlertRemoveDaimoku(final Daimoku daimoku, final AlertDialog parentDialog) {
         new AlertDialog.Builder(HistoryActivity.this)
                 .setTitle(R.string.all_dialog_title_confirm_delete)
                 .setMessage(R.string.all_dialog_message_confirm_delete)
@@ -74,9 +65,10 @@ public class HistoryActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         database.remove(daimoku);
+                        parentDialog.dismiss();
                         Toast.makeText(HistoryActivity.this, R.string.all_history_toast_item_removed, Toast.LENGTH_LONG).show();
 
-                        updateDaimokuList(database.getAllDaimoku());
+                        setUpDaimokuList(database.getAllDaimoku());
                     }
                 })
                 .setNegativeButton("NÃO", null)
@@ -84,11 +76,14 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     @SuppressLint("InflateParams")
-    private void createDialogDaimoku(Daimoku daimoku) {
+    private void createDialogDaimoku(final Daimoku daimoku) {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.daimoku_details, null);
+        final AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
 
-        dialogView.findViewById(R.id.ll_layout_when).setVisibility(View.VISIBLE);
-        TextView tvWhen = dialogView.findViewById(R.id.tv_alert_when);
+        dialogView.findViewById(R.id.ll_dialog_when).setVisibility(View.VISIBLE);
+        TextView tvWhen = dialogView.findViewById(R.id.tv_dialog_when);
         tvWhen.setText(daimoku.getData());
 
         TextView tvTime = dialogView.findViewById(R.id.tv_alert_time);
@@ -98,10 +93,15 @@ public class HistoryActivity extends AppCompatActivity {
         etInfo.setText(daimoku.getInformacao());
         etInfo.setFocusable(false);
 
+        ImageView btRemove = dialogView.findViewById(R.id.ib_dialog_remove_daimoku);
+        btRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createAlertRemoveDaimoku(daimoku, dialog);
+            }
+        });
 
-        new AlertDialog.Builder(this)
-                .setView(dialogView)
-                .create().show();
+        dialog.show();
     }
 
     private String calculateTotalTime(List<Daimoku> daimokuList) {

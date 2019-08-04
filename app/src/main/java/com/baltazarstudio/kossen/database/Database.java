@@ -92,7 +92,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     public void remove(Daimoku daimoku) {
-        String sql = "DELETE * FROM " + TABELA_HISTORICO
+        String sql = "DELETE FROM " + TABELA_HISTORICO
                 + " WHERE "
                 + HISTORICO_ID + " = " + daimoku.getId();
 
