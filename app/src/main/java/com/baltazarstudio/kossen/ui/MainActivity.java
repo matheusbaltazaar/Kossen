@@ -3,12 +3,8 @@ package com.baltazarstudio.kossen.ui;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,21 +14,23 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.baltazarstudio.kossen.R;
 import com.baltazarstudio.kossen.component.AnimationBehavior;
 import com.baltazarstudio.kossen.component.Chronometer;
 import com.baltazarstudio.kossen.database.Database;
 import com.baltazarstudio.kossen.model.Daimoku;
-import com.baltazarstudio.kossen.model.Sounds;
+import com.baltazarstudio.kossen.util.Sounds;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-
-    private final String DAIMOKU_GOAL_SOUND = "goal_sound";
-    private final int DEFAULT_DAIMOKU_GOAL_SOUND = R.raw.camila_cabello_havana;
 
     private TextView labelGoalTime;
     private TextView labelCurrentTime;
@@ -43,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
     // Media Player
     private MediaPlayer mMediaPlayer;
-    private SharedPreferences preferences;
 
     private Chronometer mChronometer;
     private Menu actionMenu;
@@ -53,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        preferences = getSharedPreferences("prefs", MODE_PRIVATE);
         setUpChronometer();
         setUpView();
     }
@@ -67,13 +63,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.action_history) {
             startActivity(new Intent(this, HistoryActivity.class));
         } else if (id == R.id.action_sound) {
-            createDialogSelectSound();
+            Sounds.showSoundDialog(this);
         } else if (id == R.id.action_reset) {
             if (mChronometer.hasStarted()) {
                 createResetAlert();
@@ -154,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
                                 mChronometer.stop();
                                 toggleUIComponents(true);
                                 buttonStartStop.setEnabled(false);
-                                createDialogRegister();
+                                createDialogRegisterDaimoku();
                                 dialog.dismiss();
                             }
                         })
@@ -226,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressLint("InflateParams")
-    private void createDialogRegister() {
+    private void createDialogRegisterDaimoku() {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_register, null);
         final String time = mChronometer.getCurrentTime();
 
@@ -268,9 +264,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void playSound() {
         stopSound();
-        int soundId = preferences.getInt(DAIMOKU_GOAL_SOUND, DEFAULT_DAIMOKU_GOAL_SOUND);
-
-        mMediaPlayer = MediaPlayer.create(this, soundId);
+        mMediaPlayer = MediaPlayer.create(this, Sounds.getSelectedSound(this));
         mMediaPlayer.start();
     }
 
@@ -291,43 +285,6 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("Não", null)
                 .create().show();
-    }
-
-    private void createDialogSelectSound() {
-        final int previousSoundId = preferences.getInt(DAIMOKU_GOAL_SOUND, DEFAULT_DAIMOKU_GOAL_SOUND);
-        final boolean[] confirmed = {false};
-
-        new AlertDialog.Builder(this)
-                .setTitle("Escolha uma melodia")
-                .setSingleChoiceItems(R.array.array_sounds, Sounds.getPosition(previousSoundId), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        playSound();
-                        updateRing(Sounds.get(which));
-                    }
-                })
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        confirmed[0] = true;
-                    }
-                })
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        stopSound();
-                        if (!confirmed[0]) {
-                            updateRing(previousSoundId);
-                        }
-                    }
-                })
-                .create().show();
-    }
-
-    private void updateRing(int id) {
-        preferences.edit()
-                .putInt(DAIMOKU_GOAL_SOUND, id)
-                .apply();
     }
 
     @Override

@@ -36,9 +36,4 @@
     <string name="all_dialog_message_confirm_delete">Remover o daimoku ?</string>
     <string name="all_dialog_title_confirm_delete">Confirmar</string>
 
-    <string-array name="array_sounds">
-        <item>Camila Cabello Havana</item>
-        <item>Magical Morning</item>
-        <item>Light Ringtone</item>
-    </string-array>
 </resources>
