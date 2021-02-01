@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/activity_frame"
     android:gravity="center"
     android:orientation="horizontal"
     android:weightSum="1"
@@ -12,149 +12,196 @@
 
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight=".85"
-        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <FrameLayout
+            android:id="@+id/layout_coordinator_reference_up"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/background_main_activity" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/layout_default_offset_8">
+
+                    <com.mikhaellopez.circularimageview.CircularImageView
+                        android:id="@+id/iv_user_profile_image"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:src="@drawable/ic_user_profile_placeholder"
+                        app:civ_border="false"
+                        app:civ_circle_color="@android:color/transparent" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:id="@+id/button_menu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:padding="@dimen/layout_default_offset_8"
+                        android:src="@drawable/ic_more_vertical"
+                        app:tint="?colorControlHighlight" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/layout_default_offset_8"
+                    android:text="Olá, praticante! Vamos fazer daimoku?"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/text_size_18" />
+
+                <RelativeLayout
+                    android:layout_width="192dp"
+                    android:layout_height="192dp"
+                    android:layout_marginTop="@dimen/layout_default_offset_16">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <com.baltazarstudio.kossen.component.TimeInputText
+                            android:id="@+id/et_time_input"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:gravity="center"
+                            android:imeOptions="actionDone"
+                            android:inputType="number"
+                            android:text="@string/tv_clock_label_placeholder"
+                            android:textColor="@android:color/white"
+                            android:textSize="@dimen/text_size_32" />
+
+                        <TextView
+                            android:id="@+id/tv_current_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:gravity="center"
+                            android:text="@string/tv_clock_label_placeholder"
+                            android:textColor="@android:color/white"
+                            android:textSize="@dimen/text_size_32"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/tv_goal_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/tv_clock_label_placeholder"
+                            android:textSize="@dimen/text_size_16"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/progress_circular_contagem_tempo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:indeterminateOnly="false"
+                        android:paddingStart="@dimen/circle_progressbar_style_inner_padding"
+                        android:paddingEnd="@dimen/circle_progressbar_style_inner_padding"
+                        android:progressDrawable="@drawable/circle_progress_bar_drawable"
+                        tools:progress="58" />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </FrameLayout>
 
         <LinearLayout
-            android:layout_width="240dp"
-            android:layout_height="240dp"
-            android:layout_gravity="center"
-            android:background="@drawable/background_circle_goal_time"
-            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tv_historico_title"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/all_label_meta"
-                android:textColor="@android:color/black"
-                android:textSize="24sp" />
-
+                android:layout_marginTop="24dp"
+                android:drawablePadding="@dimen/layout_default_offset_8"
+                android:padding="@dimen/layout_default_offset_8"
+                android:text="Histórico"
+                android:textAllCaps="true"
+                android:textSize="@dimen/text_size_16"
+                app:drawableStartCompat="@drawable/ic_historico" />
 
             <TextView
-                android:id="@+id/tv_goal_time"
+                android:id="@+id/tv_historico_sem_historico_daimoku"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/tv_clock_label_placeholder"
-                android:textSize="42sp" />
+                android:layout_marginHorizontal="@dimen/layout_default_offset_8"
+                android:text="Não há histórico de daimoku."
+                android:textStyle="italic"
+                android:visibility="visible"
+                tools:visibility="visible" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_historico"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/layout_default_offset_8"
+                tools:itemCount="2"
+                tools:listitem="@layout/meta_list_item" />
         </LinearLayout>
+    </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_anchor="@id/layout_coordinator_reference_up"
+        app:layout_anchorGravity="bottom|center">
 
-        <LinearLayout
-            android:id="@+id/layout_clock_functions_buttons"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:orientation="horizontal"
-            android:weightSum="4">
-
-
-            <Button
-                android:id="@+id/button_increase_time_one_hour"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:layout_weight="1"
-                android:background="@drawable/all_rounded_border_button_green"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:text="@string/label_add_time_one_hour"
-                android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/all_increase_button_size_text"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/button_increase_time_thirty_minutes"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:layout_weight="1"
-                android:background="@drawable/all_rounded_border_button_green"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:text="@string/label_add_time_thirty_minutes"
-                android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/all_increase_button_size_text"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/button_increase_time_fifteen_minutes"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:layout_weight="1"
-                android:background="@drawable/all_rounded_border_button_green"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:text="@string/label_add_time_fifteen_minutes"
-                android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/all_increase_button_size_text"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/button_increase_time_five_minutes"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:layout_weight="1"
-                android:background="@drawable/all_rounded_border_button_green"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:text="@string/label_add_time_five_minutes"
-                android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/all_increase_button_size_text"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-
-        <TextView
-            android:id="@+id/tv_current_time"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/button_resume_pause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/tv_clock_label_placeholder"
-            android:textColor="@android:color/black"
-            android:textSize="36sp" />
+            android:layout_margin="@dimen/layout_default_offset_8"
+            android:src="@drawable/ic_play"
+            app:backgroundTint="@color/colorYellow"
+            app:tint="@android:color/white" />
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/button_restaurar"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="2dp">
-
-            <Button
-                android:id="@+id/button_save_current_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="2dp"
-                android:layout_weight="1"
-                android:background="@drawable/all_rounded_border_button_green"
-                android:text="@string/all_button_save_current_time"
-                android:textColor="@color/colorPrimary"
-                android:textSize="20sp"
-                android:visibility="gone" />
-
-            <Button
-                android:id="@+id/bt_start_stop_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="2dp"
-                android:layout_weight="1"
-                android:background="@drawable/all_rounded_button_green"
-                android:text="@string/all_button_start"
-                android:textColor="@android:color/white"
-                android:textSize="20sp" />
-        </LinearLayout>
+            android:layout_marginStart="@dimen/layout_default_offset_16"
+            android:src="@drawable/ic_restore"
+            android:visibility="gone"
+            app:backgroundTint="@color/colorYellow"
+            app:maxImageSize="30dp"
+            app:tint="@android:color/white" />
 
     </LinearLayout>
 
 
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

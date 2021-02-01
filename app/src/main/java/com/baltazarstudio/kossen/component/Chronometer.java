@@ -2,6 +2,8 @@ package com.baltazarstudio.kossen.component;
 
 import android.os.Handler;
 
+import java.util.Locale;
+
 public class Chronometer {
     private TimeListener mListener;
     private boolean isRunning;
@@ -23,34 +25,35 @@ public class Chronometer {
         hasStarted = false;
     }
 
-    public String getCurrentTime() {
-        return format(currentTimeHours,
-                currentTimeMinutes,
-                currentTimeSeconds);
+    public String getCurrentTimeFormatted() {
+        return String.format(
+                Locale.getDefault(),
+                "%02d:%02d:%02d", currentTimeHours, currentTimeMinutes, currentTimeSeconds);
     }
 
-    public String getGoalTime() {
-        return format(goalTimeHours,
-                goalTimeMinutes,
-                goalTimeSeconds);
+    public int getCurrentTimeInSeconds() {
+        int minutes = currentTimeHours * 60;
+        minutes += 60 * currentTimeMinutes;
+        return currentTimeSeconds + minutes;
     }
 
-    private String format(int horas, int minutos, int segundos) {
-        return (horas < 10 ? "0" + horas : horas)
-                + ":"
-                + (minutos < 10 ? "0" + minutos : minutos)
-                + ":"
-                + (segundos < 10 ? "0" + segundos : segundos);
+    public void setGoal(String time) {
+        // "HH:mm:ss" pattern
+        goalTimeHours = Integer.parseInt(time.substring(0, 2));
+        goalTimeMinutes = Integer.parseInt(time.substring(3, 5));
+        goalTimeSeconds = Integer.parseInt(time.substring(6));
     }
 
-    public void addMinutes(int minutes) {
-        goalTimeMinutes += minutes;
-//        goalTimeSeconds = 5;
+    public boolean hasGoal() {
+        return goalTimeHours > 0
+                || goalTimeMinutes > 0
+                || goalTimeSeconds > 0;
+    }
 
-        if (goalTimeMinutes > 59) {
-            goalTimeHours++;
-            goalTimeMinutes -= 60;
-        }
+    public int getGoalTimeInSeconds() {
+        int minutes = goalTimeHours * 60;
+        minutes += 60 * goalTimeMinutes;
+        return goalTimeSeconds + minutes;
     }
 
     public void resume() {
@@ -114,9 +117,7 @@ public class Chronometer {
         }
     }
 
-    public boolean isRunning() {
-        return isRunning;
-    }
+    public boolean isRunning() { return isRunning; }
 
     private boolean isTargetReached() {
         return (currentTimeSeconds == goalTimeSeconds
@@ -126,12 +127,6 @@ public class Chronometer {
 
     public boolean hasStarted() {
         return hasStarted;
-    }
-
-    public boolean hasTarget() {
-        return (goalTimeHours > 0
-                && goalTimeMinutes > 0
-                && goalTimeSeconds > 0);
     }
 
     public void setTimeListener(TimeListener listener) {

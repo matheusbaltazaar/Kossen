@@ -5,159 +5,107 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
+import android.os.Handler;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.baltazarstudio.kossen.R;
-import com.baltazarstudio.kossen.component.AnimationBehavior;
 import com.baltazarstudio.kossen.component.Chronometer;
-import com.baltazarstudio.kossen.database.Database;
-import com.baltazarstudio.kossen.model.Daimoku;
+import com.baltazarstudio.kossen.component.TimeInputText;
+import com.baltazarstudio.kossen.util.AnimationUtil;
 import com.baltazarstudio.kossen.util.Sounds;
-import com.google.android.material.snackbar.Snackbar;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.mikhaellopez.circularimageview.CircularImageView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView labelGoalTime;
-    private TextView labelCurrentTime;
 
-    private Button buttonSave;
-    private Button buttonStartStop;
+    /**
+     * - (PARTIALLY DONE) Novo layout Contador (link no Slack)
+     * - Ícone com foto no canto esquerdo da toolbar (no drawer icon)
+     * - Tela de Apresentação
+     * - Capturar Foto de perfil Telefone (Crop imagem)
+     * <p>
+     * - Refatoração: Código (Revisar todas as classes)
+     * - Migração projeto para Kotlin
+     */
+
+
+    private TextView labelGoalTime;
+    private TextView tvCurrentTime;
+    private TimeInputText inputTime;
+
+    private FloatingActionButton buttonResumePause;
+    private FloatingActionButton buttonRestore;
 
 
     // Media Player
     private MediaPlayer mMediaPlayer;
 
     private Chronometer mChronometer;
-    private Menu actionMenu;
+    private ImageView menuMore;
+    private CircularImageView userProfileImage;
+    private ProgressBar mProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        loadProfilePhoto();
+        setUpMenu();
         setUpChronometer();
-        setUpView();
+        setUpCircularProgress();
+        setUpHistorico();
+
+        startIntroAnimations();
+
     }
 
+    private void loadProfilePhoto() {
+        userProfileImage = findViewById(R.id.iv_user_profile_image);
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        this.actionMenu = menu;
-        return super.onCreateOptionsMenu(menu);
+        // TODO
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_history) {
-            startActivity(new Intent(this, HistoryActivity.class));
-        } else if (id == R.id.action_sound) {
-            Sounds.showSoundDialog(this);
-        } else if (id == R.id.action_reset) {
-            if (mChronometer.hasStarted()) {
-                createResetAlert();
-            } else {
-                restoreClock();
-            }
-        }
-        return super.onOptionsItemSelected(item);
+    private void setUpCircularProgress() {
+        mProgress = findViewById(R.id.progress_circular_contagem_tempo);
+        mProgress.setMax(100);
     }
 
-    private void setUpView() {
-        labelGoalTime = findViewById(R.id.tv_goal_time);
-
-        Button buttonIncreaseOneHour = findViewById(R.id.button_increase_time_one_hour);
-        buttonIncreaseOneHour.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mChronometer.addMinutes(60);
-                labelGoalTime.setText(mChronometer.getGoalTime());
-            }
-        });
-
-        Button buttonIncreaseThirtyMinutes = findViewById(R.id.button_increase_time_thirty_minutes);
-        buttonIncreaseThirtyMinutes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mChronometer.addMinutes(30);
-                labelGoalTime.setText(mChronometer.getGoalTime());
-            }
-        });
-
-        Button buttonIncreaseFifteenMinutes = findViewById(R.id.button_increase_time_fifteen_minutes);
-        buttonIncreaseFifteenMinutes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mChronometer.addMinutes(15);
-                labelGoalTime.setText(mChronometer.getGoalTime());
-            }
-        });
-
-        Button buttonIncreaseFiveMinutes = findViewById(R.id.button_increase_time_five_minutes);
-        buttonIncreaseFiveMinutes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mChronometer.addMinutes(5);
-                labelGoalTime.setText(mChronometer.getGoalTime());
-            }
-        });
-
-        labelCurrentTime = findViewById(R.id.tv_current_time);
-
-        buttonStartStop = findViewById(R.id.bt_start_stop_time);
-        buttonStartStop.setOnClickListener(new View.OnClickListener() {
+    private void setUpMenu() {
+        menuMore = findViewById(R.id.button_menu);
+        menuMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mChronometer.isRunning()) {
-                    mChronometer.stop();
-                    buttonStartStop.setText(R.string.all_button_start);
-                    toggleUIComponents(true);
-                } else {
-                    mChronometer.resume();
-                    buttonStartStop.setText(R.string.all_button_stop);
-                    toggleUIComponents(false);
-                }
+                PopupMenu popup = new PopupMenu(MainActivity.this, v, Gravity.END);
+                popup.getMenuInflater().inflate(R.menu.menu_main, popup.getMenu());
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        int id = item.getItemId();
+
+                        if (id == R.id.action_history) {
+                            startActivity(new Intent(MainActivity.this, HistoryActivity.class));
+                        } else if (id == R.id.action_sound) {
+                            Sounds.showSoundDialog(MainActivity.this);
+                        }
+                        return true;
+                    }
+                });
+                popup.show();
             }
         });
 
-        buttonSave = findViewById(R.id.button_save_current_time);
-        buttonSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new AlertDialog.Builder(MainActivity.this)
-                        .setTitle(R.string.all_dialog_title_confirm_register)
-                        .setMessage(R.string.all_dialog_message_confirm_register)
-                        .setPositiveButton("SIM", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mChronometer.stop();
-                                toggleUIComponents(true);
-                                buttonStartStop.setEnabled(false);
-                                createDialogRegisterDaimoku();
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton("NÃO", null)
-                        .create().show();
-            }
-        });
 
     }
 
@@ -166,45 +114,117 @@ public class MainActivity extends AppCompatActivity {
         mChronometer.setTimeListener(new Chronometer.TimeListener() {
             @Override
             public void onTick() {
-                labelCurrentTime.setText(mChronometer.getCurrentTime());
+                tvCurrentTime.setText(mChronometer.getCurrentTimeFormatted());
+                if (mChronometer.hasGoal())
+                    mProgress.setProgress(calcularProgresso());
             }
 
             @Override
             public void onTargetReached() {
-                mChronometer.stop();
-                buttonStartStop.setText(R.string.all_button_resume);
                 toggleUIComponents(true);
+                mChronometer.stop();
+                buttonResumePause.setImageResource(R.drawable.ic_play);
+                buttonRestore.setVisibility(View.VISIBLE);
+                AnimationUtil.leftToRight(getBaseContext(), buttonRestore);
                 playSound();
                 createDialogGoalReached();
             }
         });
+
+        labelGoalTime = findViewById(R.id.tv_goal_time);
+        tvCurrentTime = findViewById(R.id.tv_current_time);
+        inputTime = findViewById(R.id.et_time_input);
+
+
+        buttonResumePause = findViewById(R.id.button_resume_pause);
+        buttonResumePause.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (!mChronometer.hasStarted()) {
+                    labelGoalTime.setText(inputTime.getText());
+                    mChronometer.setGoal(inputTime.getText().toString());
+
+                    if (!mChronometer.hasGoal()) {
+                        fillProgressAnimated();
+                    }
+                }
+
+                if (mChronometer.isRunning()) {
+                    toggleUIComponents(true);
+                    buttonResumePause.setImageResource(R.drawable.ic_play);
+                    buttonRestore.setVisibility(View.VISIBLE);
+                    mChronometer.stop();
+
+                    AnimationUtil.leftToRight(v.getContext(), buttonRestore);
+                } else {
+                    toggleUIComponents(false);
+                    buttonResumePause.setImageResource(R.drawable.ic_pause);
+                    buttonRestore.setVisibility(View.GONE);
+
+                    if (mChronometer.hasStarted())
+                        AnimationUtil.leftToRight(getBaseContext(), buttonResumePause);
+
+                    mChronometer.resume();
+                }
+            }
+        });
+
+        buttonRestore = findViewById(R.id.button_restaurar);
+        buttonRestore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                restoreClock();
+            }
+        });
     }
 
+    private void setUpHistorico() {
+        TextView tvHistorico = findViewById(R.id.tv_historico_sem_historico_daimoku);
+        RecyclerView rvHistorico = findViewById(R.id.rv_historico);
+
+        if (/*Se houver histórico*/false) {
+            tvHistorico.setVisibility(View.GONE);
+            rvHistorico.setVisibility(View.VISIBLE);
+        } else {
+            tvHistorico.setVisibility(View.VISIBLE);
+            rvHistorico.setVisibility(View.GONE);
+        }
+
+        // TODO Capturar Histórico
+    }
+
+    @SuppressLint("SetTextI18n")
     private void restoreClock() {
         mChronometer.reset();
-        labelCurrentTime.setText(mChronometer.getCurrentTime());
-        labelGoalTime.setText(mChronometer.getGoalTime());
-        buttonStartStop.setText(R.string.all_button_start);
-        buttonStartStop.setEnabled(true);
-        AnimationBehavior.hideFadeOut(buttonSave);
-        Snackbar.make(buttonStartStop, R.string.all_alert_clock_reseted, Snackbar.LENGTH_LONG).show();
+        mProgress.setProgress(0);
+        tvCurrentTime.setText("00:00:00");
+        labelGoalTime.setText("00:00:00");
+        inputTime.setText("00:00:00");
+
+        buttonResumePause.setImageResource(R.drawable.ic_play);
+        AnimationUtil.leftToRight(getBaseContext(), buttonResumePause);
+
+        buttonRestore.setVisibility(View.GONE);
+        toggleUIComponents(true);
     }
 
     private void toggleUIComponents(boolean enabled) {
-        if (!enabled) {
-            AnimationBehavior.hideFadeOut(findViewById(R.id.layout_clock_functions_buttons));
+        userProfileImage.setEnabled(enabled);
+        menuMore.setEnabled(enabled);
 
-            if (!mChronometer.hasTarget()) {
-                AnimationBehavior.hideFadeOut(buttonSave);
+        if (!mChronometer.hasStarted()) {
+            if (enabled) {
+                tvCurrentTime.setVisibility(View.GONE);
+                inputTime.setVisibility(View.VISIBLE);
+            } else {
+                tvCurrentTime.setVisibility(View.VISIBLE);
+                inputTime.setVisibility(View.GONE);
             }
-        } else {
-            AnimationBehavior.showFadeIn(findViewById(R.id.layout_clock_functions_buttons));
-            AnimationBehavior.showFadeIn(buttonSave);
         }
 
-        for (int i = 0; i < actionMenu.size(); i++) {
-            actionMenu.getItem(i).setEnabled(enabled);
-        }
+        // TODO Desabilitar click do histórico
+
     }
 
     private void createDialogGoalReached() {
@@ -221,10 +241,11 @@ public class MainActivity extends AppCompatActivity {
                 .create().show();
     }
 
+/*
     @SuppressLint("InflateParams")
     private void createDialogRegisterDaimoku() {
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_register, null);
-        final String time = mChronometer.getCurrentTime();
+        final String time = mChronometer.getCurrentTimeFormatted();
 
         TextView tvTime = dialogView.findViewById(R.id.tv_alert_time);
         tvTime.setText(time);
@@ -239,29 +260,25 @@ public class MainActivity extends AppCompatActivity {
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        register(time, etInfo.getText().toString());
+                        Locale mLocale = new Locale("pt", "BR");
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", mLocale);
+                        final String now = sdf.format(Calendar.getInstance().getTime());
+
+                        Database database = new Database(getBaseContext());
+
+                        Daimoku daimoku = new Daimoku();
+                        daimoku.setData(now);
+                        daimoku.setDuracao(time);
+                        daimoku.setInformacao(etInfo.getText().toString());
+
+                        database.register(daimoku);
+                        Toast.makeText(getBaseContext(), R.string.all_alert_time_registered, Toast.LENGTH_LONG).show();
                         dialog.dismiss();
                     }
                 });
         dialog.show();
     }
-
-    private void register(String currentTime, String info) {
-        Locale mLocale = new Locale("pt", "BR");
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", mLocale);
-        final String now = sdf.format(Calendar.getInstance().getTime());
-
-        Database database = new Database(MainActivity.this);
-
-        Daimoku daimoku = new Daimoku();
-        daimoku.setData(now);
-        daimoku.setDuracao(currentTime);
-        daimoku.setInformacao(info);
-
-        database.register(daimoku);
-        Toast.makeText(this, R.string.all_alert_time_registered, Toast.LENGTH_LONG).show();
-    }
-
+*/
     private void playSound() {
         stopSound();
         mMediaPlayer = MediaPlayer.create(this, Sounds.getSelectedSound(this));
@@ -273,18 +290,36 @@ public class MainActivity extends AppCompatActivity {
             mMediaPlayer.stop();
     }
 
-    private void createResetAlert() {
-        new AlertDialog.Builder(this)
-                .setTitle("Confirmação")
-                .setMessage("Quer mesmo reiniciar a contagem ?")
-                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        restoreClock();
-                    }
-                })
-                .setNegativeButton("Não", null)
-                .create().show();
+    private void startIntroAnimations() {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                AnimationUtil.leftToRight(getBaseContext(), findViewById(R.id.tv_historico_title));
+                AnimationUtil.fadeIn(getBaseContext(), mProgress);
+            }
+        });
+    }
+
+    private int calcularProgresso() {
+        int tempoTotalEmSegundos = mChronometer.getGoalTimeInSeconds();
+        int segundosAtual = mChronometer.getCurrentTimeInSeconds();
+
+        // REGRA DE 3
+        return (segundosAtual * 100) / tempoTotalEmSegundos;
+    }
+
+    private void fillProgressAnimated() {
+        if (mProgress.getMax() == mProgress.getProgress())
+            return;
+
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                mProgress.incrementProgressBy(1);
+                fillProgressAnimated();
+            }
+        });
+
     }
 
     @Override

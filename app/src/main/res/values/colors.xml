@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#578B2E</color>
-    <color name="colorPrimaryDark">#77AA3D</color>
+    <color name="colorPrimary">#AA33B5E5</color>
+    <color name="colorPrimaryDark">@android:color/holo_blue_light</color>
     <color name="colorAccent">@color/colorPrimary</color>
+
+    <color name="colorYellow">#FFEA00</color>
+    <color name="off_primary">#E1F5FB</color>
 </resources>

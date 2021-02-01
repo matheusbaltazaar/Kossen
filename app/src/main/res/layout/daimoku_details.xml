@@ -16,8 +16,7 @@
             android:id="@+id/ll_dialog_when"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone">
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -69,28 +68,31 @@
             android:text="@string/all_alert_label_info"
             android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/et_daimuku_info"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="160dp"
-            android:layout_margin="4dp"
-            android:background="@drawable/background_edittext_daimoku_info"
-            android:ems="10"
-            android:gravity="start|top"
-            android:hint="@string/all_alert_edittext_hint_info"
-            android:inputType="textMultiLine"
-            android:padding="4dp"
-            tools:ignore="Autofill" />
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_daimuku_info"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:layout_margin="4dp"
+                android:gravity="start|top"
+                android:hint="@string/all_alert_edittext_hint_info"
+                android:inputType="textMultiLine"
+                android:padding="4dp"
+                tools:ignore="Autofill" />
+        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
     <ImageView
         android:id="@+id/ib_dialog_remove_daimoku"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_margin="4dp"
+        android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:background="?attr/selectableItemBackground"
-        android:layout_alignParentEnd="true"
         android:src="@drawable/ic_remove" />
 </RelativeLayout>
