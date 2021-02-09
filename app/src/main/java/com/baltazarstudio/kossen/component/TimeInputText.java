@@ -1,5 +1,6 @@
 package com.baltazarstudio.kossen.component;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.text.Editable;
@@ -100,6 +101,13 @@ public class TimeInputText extends TextInputEditText {
         }
 
         return time;
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void resetTime() {
+        removeTextChangedListener(mask);
+        setText("00:00:00");
+        addTextChangedListener(mask);
     }
 
     private static class DateMask implements TextWatcher {

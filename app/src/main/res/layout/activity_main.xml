@@ -26,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
-                android:src="@drawable/background_main_activity" />
+                android:src="@drawable/image_main_activity_background" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -131,6 +131,22 @@
                         tools:progress="58" />
                 </RelativeLayout>
 
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <Button
+                        android:id="@+id/button_salvar_daimoku"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="192dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="@dimen/layout_default_offset_16"
+                        android:text="Salvar"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+                </FrameLayout>
             </LinearLayout>
 
         </FrameLayout>
@@ -160,17 +176,17 @@
                 android:layout_marginHorizontal="@dimen/layout_default_offset_8"
                 android:text="Não há histórico de daimoku."
                 android:textStyle="italic"
-                android:visibility="visible"
-                tools:visibility="visible" />
+                android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_historico"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/layout_default_offset_8"
-                tools:itemCount="2"
-                tools:listitem="@layout/meta_list_item" />
+                android:paddingStart="@dimen/layout_default_offset_8"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_historico_daimoku" />
         </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout

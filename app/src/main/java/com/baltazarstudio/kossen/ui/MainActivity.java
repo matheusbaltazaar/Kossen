@@ -1,4 +1,4 @@
-package com.baltazarstudio.kossen.ui;
+ package com.baltazarstudio.kossen.ui;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
@@ -16,45 +17,53 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.baltazarstudio.kossen.R;
 import com.baltazarstudio.kossen.component.Chronometer;
 import com.baltazarstudio.kossen.component.TimeInputText;
+import com.baltazarstudio.kossen.database.Database;
+import com.baltazarstudio.kossen.model.Daimoku;
+import com.baltazarstudio.kossen.ui.adapter.HistoricoDaimokuAdapter;
 import com.baltazarstudio.kossen.util.AnimationUtil;
 import com.baltazarstudio.kossen.util.Sounds;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.List;
+
+ public class MainActivity extends AppCompatActivity {
 
 
-    /**
-     * - (PARTIALLY DONE) Novo layout Contador (link no Slack)
-     * - Ícone com foto no canto esquerdo da toolbar (no drawer icon)
-     * - Tela de Apresentação
-     * - Capturar Foto de perfil Telefone (Crop imagem)
-     * <p>
-     * - Refatoração: Código (Revisar todas as classes)
-     * - Migração projeto para Kotlin
-     */
+     /**
+      * - (DONE) Novo layout Contador (link no Slack)
+      * - Dados de perfil (Capturar foto, crop imagem etc)
+      * - Tela de Apresentação
+      * - Ícone com foto no canto esquerdo da toolbar (no drawer icon)
+      * - Ajustar sons para quando concluir a oração
+      * <p>
+      * - Refatoração: Código (Revisar todas as classes)
+      * - Migração projeto para Kotlin
+      */
 
 
-    private TextView labelGoalTime;
-    private TextView tvCurrentTime;
-    private TimeInputText inputTime;
+     private TextView labelGoalTime;
+     private TextView tvCurrentTime;
+     private TimeInputText inputTime;
 
-    private FloatingActionButton buttonResumePause;
-    private FloatingActionButton buttonRestore;
+     private FloatingActionButton buttonResumePause;
+     private FloatingActionButton buttonRestore;
+     private Button buttonSalvar;
 
 
-    // Media Player
-    private MediaPlayer mMediaPlayer;
+     // Media Player
+     private MediaPlayer mMediaPlayer;
 
-    private Chronometer mChronometer;
-    private ImageView menuMore;
-    private CircularImageView userProfileImage;
-    private ProgressBar mProgress;
+     private Chronometer mChronometer;
+     private ImageView menuMore;
+     private CircularImageView userProfileImage;
+     private ProgressBar mProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,9 +103,7 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onMenuItemClick(MenuItem item) {
                         int id = item.getItemId();
 
-                        if (id == R.id.action_history) {
-                            startActivity(new Intent(MainActivity.this, HistoryActivity.class));
-                        } else if (id == R.id.action_sound) {
+                        if (id == R.id.action_sound) {
                             Sounds.showSoundDialog(MainActivity.this);
                         }
                         return true;
@@ -125,7 +132,9 @@ public class MainActivity extends AppCompatActivity {
                 mChronometer.stop();
                 buttonResumePause.setImageResource(R.drawable.ic_play);
                 buttonRestore.setVisibility(View.VISIBLE);
-                AnimationUtil.leftToRight(getBaseContext(), buttonRestore);
+                AnimationUtil.fadeIn(getBaseContext(), buttonRestore);
+                buttonSalvar.setVisibility(View.VISIBLE);
+                AnimationUtil.fadeIn(getBaseContext(), buttonSalvar);
                 playSound();
                 createDialogGoalReached();
             }
@@ -156,14 +165,21 @@ public class MainActivity extends AppCompatActivity {
                     buttonRestore.setVisibility(View.VISIBLE);
                     mChronometer.stop();
 
-                    AnimationUtil.leftToRight(v.getContext(), buttonRestore);
+                    AnimationUtil.fadeIn(v.getContext(), buttonRestore);
+
+                    AnimationUtil.fadeIn(getBaseContext(), buttonSalvar);
+                    buttonSalvar.setVisibility(View.VISIBLE);
                 } else {
                     toggleUIComponents(false);
                     buttonResumePause.setImageResource(R.drawable.ic_pause);
                     buttonRestore.setVisibility(View.GONE);
+                    buttonSalvar.setVisibility(View.GONE);
 
                     if (mChronometer.hasStarted())
                         AnimationUtil.leftToRight(getBaseContext(), buttonResumePause);
+
+                    if (mChronometer.hasStarted())
+                        AnimationUtil.fadeOut(getBaseContext(), buttonSalvar);
 
                     mChronometer.resume();
                 }
@@ -177,39 +193,99 @@ public class MainActivity extends AppCompatActivity {
                 restoreClock();
             }
         });
+
+        buttonSalvar = findViewById(R.id.button_salvar_daimoku);
+        buttonSalvar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RegistrarDaimokuDialog dialog
+                        = new RegistrarDaimokuDialog(MainActivity.this, mChronometer.getCurrentTimeFormatted());
+                dialog.setOnSavedDaimokuListener(new RegistrarDaimokuDialog.OnSavedDaimokuListener() {
+                    @Override
+                    public void onSave() {
+                        setUpHistorico();
+                        buttonResumePause.setEnabled(false);
+                        buttonSalvar.setEnabled(false);
+                    }
+                });
+                dialog.show();
+            }
+        });
     }
 
-    private void setUpHistorico() {
-        TextView tvHistorico = findViewById(R.id.tv_historico_sem_historico_daimoku);
-        RecyclerView rvHistorico = findViewById(R.id.rv_historico);
+     private void setUpHistorico() {
+         // CASO FOR USAR UM DIA, TRABALHO EM PARTE RESOLVIDO
+        /*private String calculateTotalTime(List<Daimoku> daimokuList) {
+            int horas = 0;
+            int minutos = 0;
+            int segundos = 0;
 
-        if (/*Se houver histórico*/false) {
-            tvHistorico.setVisibility(View.GONE);
-            rvHistorico.setVisibility(View.VISIBLE);
-        } else {
-            tvHistorico.setVisibility(View.VISIBLE);
-            rvHistorico.setVisibility(View.GONE);
-        }
+            for (Daimoku daimoku : daimokuList) {
+                // PADRÃO DURAÇÃO >> ##:##:##
 
-        // TODO Capturar Histórico
-    }
+                segundos += Integer.parseInt(daimoku.getDuracao().substring(6)); // Segundos;
+                if (segundos > 59) {
+                    minutos++;
+                    segundos -= 60;
+                }
 
-    @SuppressLint("SetTextI18n")
+                minutos += Integer.parseInt(daimoku.getDuracao().substring(3, 5)); // Minutos
+                if (minutos > 59) {
+                    horas++;
+                    minutos -= 60;
+                }
+
+                horas += Integer.parseInt(daimoku.getDuracao().substring(0, 2)); // Horas
+
+            }
+
+            return horas + " horas, "
+                    + minutos + " minutos e "
+                    + segundos + " segundos";
+        }*/
+
+
+         TextView tvSemHistorico = findViewById(R.id.tv_historico_sem_historico_daimoku);
+         RecyclerView rvHistorico = findViewById(R.id.rv_historico);
+
+         List<Daimoku> listaDaimoku = new Database(this).getTodosDaimoku();
+
+         if (listaDaimoku.size() > 0) {
+             tvSemHistorico.setVisibility(View.GONE);
+             rvHistorico.setVisibility(View.VISIBLE);
+
+             rvHistorico.setLayoutManager(new LinearLayoutManager(this));
+             rvHistorico.setAdapter(new HistoricoDaimokuAdapter(this, listaDaimoku, rvHistorico.getLayoutManager()));
+             //rvHistorico.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+
+         } else {
+             tvSemHistorico.setVisibility(View.VISIBLE);
+             rvHistorico.setVisibility(View.GONE);
+         }
+
+     }
+
+     @SuppressLint("SetTextI18n")
     private void restoreClock() {
         mChronometer.reset();
         mProgress.setProgress(0);
-        tvCurrentTime.setText("00:00:00");
-        labelGoalTime.setText("00:00:00");
-        inputTime.setText("00:00:00");
+         tvCurrentTime.setText("00:00:00");
+         labelGoalTime.setText("00:00:00");
+         inputTime.resetTime();
 
-        buttonResumePause.setImageResource(R.drawable.ic_play);
-        AnimationUtil.leftToRight(getBaseContext(), buttonResumePause);
+         buttonResumePause.setImageResource(R.drawable.ic_play);
+         buttonResumePause.setEnabled(true);
+         AnimationUtil.leftToRight(getBaseContext(), buttonResumePause);
 
-        buttonRestore.setVisibility(View.GONE);
-        toggleUIComponents(true);
-    }
+         buttonRestore.setVisibility(View.GONE);
 
-    private void toggleUIComponents(boolean enabled) {
+         buttonSalvar.setVisibility(View.GONE);
+         AnimationUtil.fadeOut(getBaseContext(), buttonSalvar);
+
+         toggleUIComponents(true);
+     }
+
+     private void toggleUIComponents(boolean enabled) {
         userProfileImage.setEnabled(enabled);
         menuMore.setEnabled(enabled);
 
@@ -223,11 +299,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // TODO Desabilitar click do histórico
+        findViewById(R.id.rv_historico).setEnabled(enabled);
+     }
 
-    }
-
-    private void createDialogGoalReached() {
+     private void createDialogGoalReached() {
         new AlertDialog.Builder(this)
                 .setCancelable(false)
                 .setTitle(R.string.all_label_goal_reached)
@@ -241,44 +316,6 @@ public class MainActivity extends AppCompatActivity {
                 .create().show();
     }
 
-/*
-    @SuppressLint("InflateParams")
-    private void createDialogRegisterDaimoku() {
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_register, null);
-        final String time = mChronometer.getCurrentTimeFormatted();
-
-        TextView tvTime = dialogView.findViewById(R.id.tv_alert_time);
-        tvTime.setText(time);
-
-        final EditText etInfo = dialogView.findViewById(R.id.et_daimuku_info);
-
-        final AlertDialog dialog = new AlertDialog.Builder(this)
-                .setView(dialogView)
-                .create();
-
-        dialogView.findViewById(R.id.button_register)
-                .setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Locale mLocale = new Locale("pt", "BR");
-                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", mLocale);
-                        final String now = sdf.format(Calendar.getInstance().getTime());
-
-                        Database database = new Database(getBaseContext());
-
-                        Daimoku daimoku = new Daimoku();
-                        daimoku.setData(now);
-                        daimoku.setDuracao(time);
-                        daimoku.setInformacao(etInfo.getText().toString());
-
-                        database.register(daimoku);
-                        Toast.makeText(getBaseContext(), R.string.all_alert_time_registered, Toast.LENGTH_LONG).show();
-                        dialog.dismiss();
-                    }
-                });
-        dialog.show();
-    }
-*/
     private void playSound() {
         stopSound();
         mMediaPlayer = MediaPlayer.create(this, Sounds.getSelectedSound(this));
@@ -295,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 AnimationUtil.leftToRight(getBaseContext(), findViewById(R.id.tv_historico_title));
-                AnimationUtil.fadeIn(getBaseContext(), mProgress);
+                AnimationUtil.fadeInSlow(getBaseContext(), mProgress);
             }
         });
     }

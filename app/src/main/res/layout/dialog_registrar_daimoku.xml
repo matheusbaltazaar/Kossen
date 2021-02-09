@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="#EFFF"
+    app:cardCornerRadius="@dimen/layout_default_offset_8"
+    tools:ignore="ContentDescription">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/layout_default_offset_4"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/ll_dialog_when"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/layout_default_offset_4"
+                    android:text="@string/all_alert_label_register_when"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_dialog_registrar_daimoku_data"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/layout_default_offset_4"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="@dimen/text_size_16" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/layout_default_offset_4"
+                    android:text="Duração:"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_dialog_registrar_daimoku_duracao"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/layout_default_offset_4"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_size_16" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/layout_default_offset_4"
+                android:text="@string/all_alert_label_info"
+                android:textStyle="bold" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/layout_default_offset_4">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_dialog_registrar_daimoku_informacoes"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="start|top"
+                    android:inputType="textMultiLine"
+                    android:lines="5"
+                    android:paddingStart="@dimen/layout_default_offset_4"
+                    android:paddingTop="@dimen/layout_default_offset_4"
+                    android:paddingEnd="@dimen/layout_default_offset_4"
+                    android:paddingBottom="@dimen/layout_default_offset_4" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/button_dialog_registrar_daimoku_salvar"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/layout_default_offset_8"
+            android:text="Salvar" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

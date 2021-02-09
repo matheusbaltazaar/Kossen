@@ -3,7 +3,7 @@ package com.baltazarstudio.kossen.model;
 public class Daimoku {
     private int id;
     private String duracao;
-    private String data;
+    private Long data;
     private String informacao;
 
     public int getId() {
@@ -22,11 +22,11 @@ public class Daimoku {
         this.duracao = duracao;
     }
 
-    public String getData() {
+    public Long getData() {
         return data;
     }
 
-    public void setData(String data) {
+    public void setData(Long data) {
         this.data = data;
     }
 

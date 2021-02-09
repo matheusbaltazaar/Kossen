@@ -23,7 +23,7 @@ public class Database extends SQLiteOpenHelper {
     private static final String HISTORICO_DURACAO = "duracao";
     private static final String HISTORICO_INFORMACAO = "informacao";
 
-    private SQLiteStatement stmtInsertHistory;
+    private SQLiteStatement stmtInserirDaimoku;
 
 
     public Database(Context context) {
@@ -38,7 +38,7 @@ public class Database extends SQLiteOpenHelper {
         String create_table_history = "CREATE TABLE " + TABELA_HISTORICO + " (";
         create_table_history += HISTORICO_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,";
         create_table_history += HISTORICO_DURACAO + " TEXT,";
-        create_table_history += HISTORICO_DATA + " TEXT,";
+        create_table_history += HISTORICO_DATA + " INTEGER,";
         create_table_history += HISTORICO_INFORMACAO + " TEXT)";
 
         db.execSQL(create_table_history);
@@ -51,51 +51,49 @@ public class Database extends SQLiteOpenHelper {
 
     private void prepareStatements() {
         SQLiteDatabase db = getWritableDatabase();
-        stmtInsertHistory = db.compileStatement("INSERT INTO " + TABELA_HISTORICO + "("
+        stmtInserirDaimoku = db.compileStatement("INSERT INTO " + TABELA_HISTORICO + "("
                 + HISTORICO_DURACAO + ","
                 + HISTORICO_DATA + ","
                 + HISTORICO_INFORMACAO + ")"
                 + " VALUES (?, ?, ?)"
         );
-
     }
 
-    public void register(Daimoku daimoku) {
-        stmtInsertHistory.clearBindings();
+    public void registrarDaimoku(Daimoku daimoku) {
+        stmtInserirDaimoku.clearBindings();
 
-        stmtInsertHistory.bindString(1, daimoku.getDuracao());
-        stmtInsertHistory.bindString(2, daimoku.getData());
-        stmtInsertHistory.bindString(3, daimoku.getInformacao());
+        stmtInserirDaimoku.bindString(1, daimoku.getDuracao());
+        stmtInserirDaimoku.bindLong(2, daimoku.getData());
+        stmtInserirDaimoku.bindString(3, daimoku.getInformacao());
 
-        stmtInsertHistory.executeInsert();
-
+        stmtInserirDaimoku.executeInsert();
     }
 
-    public ArrayList<Daimoku> getAllDaimoku() {
-        String sql = "SELECT * FROM " + TABELA_HISTORICO
-                + " ORDER BY " + HISTORICO_ID + " DESC";
+    public ArrayList<Daimoku> getTodosDaimoku() {
+        String sql = "SELECT * FROM " + TABELA_HISTORICO + " ORDER BY " + HISTORICO_ID + " DESC";
         ArrayList<Daimoku> daimokuList = new ArrayList<>();
 
         Cursor cursor = getReadableDatabase().rawQuery(sql, null);
         while (cursor.moveToNext()) {
             Daimoku daimoku = new Daimoku();
-            daimoku.setId(cursor.getInt(cursor.getColumnIndex(HISTORICO_ID)));
-            daimoku.setDuracao(cursor.getString(cursor.getColumnIndex(HISTORICO_DURACAO)));
-            daimoku.setData(cursor.getString(cursor.getColumnIndex(HISTORICO_DATA)));
-            daimoku.setInformacao(cursor.getString(cursor.getColumnIndex(HISTORICO_INFORMACAO)));
+            bind(cursor, daimoku);
 
             daimokuList.add(daimoku);
         }
-        cursor.close();
 
+        cursor.close();
         return daimokuList;
     }
 
-    public void remove(Daimoku daimoku) {
-        String sql = "DELETE FROM " + TABELA_HISTORICO
-                + " WHERE "
-                + HISTORICO_ID + " = " + daimoku.getId();
+    public void bind(Cursor cursor, Daimoku daimoku) {
+        daimoku.setId(cursor.getInt(cursor.getColumnIndex(HISTORICO_ID)));
+        daimoku.setDuracao(cursor.getString(cursor.getColumnIndex(HISTORICO_DURACAO)));
+        daimoku.setData(cursor.getLong(cursor.getColumnIndex(HISTORICO_DATA)));
+        daimoku.setInformacao(cursor.getString(cursor.getColumnIndex(HISTORICO_INFORMACAO)));
+    }
 
+    public void removerDaimoku(Daimoku daimoku) {
+        String sql = "DELETE FROM " + TABELA_HISTORICO + " WHERE " + HISTORICO_ID + " = " + daimoku.getId();
         getWritableDatabase().execSQL(sql);
     }
 }
