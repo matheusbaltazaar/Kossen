@@ -1,4 +1,4 @@
- package com.baltazarstudio.kossen.ui;
+package com.baltazarstudio.kossen.ui;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
@@ -15,6 +15,7 @@ import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,11 +24,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.baltazarstudio.kossen.R;
 import com.baltazarstudio.kossen.component.Chronometer;
 import com.baltazarstudio.kossen.component.TimeInputText;
+import com.baltazarstudio.kossen.context.AppContext;
 import com.baltazarstudio.kossen.database.Database;
 import com.baltazarstudio.kossen.model.Daimoku;
+import com.baltazarstudio.kossen.model.Perfil;
 import com.baltazarstudio.kossen.ui.adapter.HistoricoDaimokuAdapter;
 import com.baltazarstudio.kossen.util.AnimationUtil;
 import com.baltazarstudio.kossen.util.Sounds;
+import com.baltazarstudio.kossen.util.Utils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
@@ -38,10 +42,12 @@ import java.util.List;
 
      /**
       * - (DONE) Novo layout Contador (link no Slack)
-      * - Dados de perfil (Capturar foto, crop imagem etc)
+      * - (DONE) Dados de perfil (Capturar foto, crop imagem etc)
+      * - (DONE) Ícone com foto no canto esquerdo da toolbar (no drawer icon)
       * - Tela de Apresentação
-      * - Ícone com foto no canto esquerdo da toolbar (no drawer icon)
       * - Ajustar sons para quando concluir a oração
+      * - Fonte personalizada (Calligraphy3 ?)
+      * - Tela para detalhes e filtragens do histórico daimoku
       * <p>
       * - Refatoração: Código (Revisar todas as classes)
       * - Migração projeto para Kotlin
@@ -64,59 +70,82 @@ import java.util.List;
      private ImageView menuMore;
      private CircularImageView userProfileImage;
      private ProgressBar mProgress;
+     private Database database;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
 
-        loadProfilePhoto();
-        setUpMenu();
-        setUpChronometer();
-        setUpCircularProgress();
-        setUpHistorico();
+         database = new Database(this);
+         AppContext.setPerfil(database.carregarPerfil());
 
-        startIntroAnimations();
+         setUpProfilePhoto();
+         setUpMenu();
+         setUpMessage();
+         setUpChronometer();
+         setUpCircularProgress();
+         setUpHistorico();
 
-    }
+         startIntroAnimations();
 
-    private void loadProfilePhoto() {
-        userProfileImage = findViewById(R.id.iv_user_profile_image);
+     }
 
-        // TODO
-    }
+     @SuppressLint("SetTextI18n")
+     private void setUpMessage() {
+         TextView tvMessagemPraticante = findViewById(R.id.tv_messagem_praticante);
 
-    private void setUpCircularProgress() {
-        mProgress = findViewById(R.id.progress_circular_contagem_tempo);
-        mProgress.setMax(100);
-    }
+         String nomePraticante = AppContext.getPerfil().getNome() != null && !AppContext.getPerfil().getNome().isEmpty() ?
+                 AppContext.getPerfil().getNome() : "praticante";
 
-    private void setUpMenu() {
-        menuMore = findViewById(R.id.button_menu);
-        menuMore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(MainActivity.this, v, Gravity.END);
-                popup.getMenuInflater().inflate(R.menu.menu_main, popup.getMenu());
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        int id = item.getItemId();
+         tvMessagemPraticante.setText("Olá, " + nomePraticante + "! Vamos fazer daimoku?");
+     }
 
-                        if (id == R.id.action_sound) {
-                            Sounds.showSoundDialog(MainActivity.this);
-                        }
-                        return true;
-                    }
-                });
-                popup.show();
-            }
-        });
+     private void setUpProfilePhoto() {
+         userProfileImage = findViewById(R.id.iv_icon_user_profile);
+
+         userProfileImage.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+             }
+         });
+
+         loadPhoto();
+     }
+
+     private void loadPhoto() {
+         Perfil perfil = AppContext.getPerfil();
+
+         userProfileImage.setImageBitmap(Utils.getBitmapFromBase64(perfil.getArquivoFotoBase64()));
+     }
+
+     private void setUpMenu() {
+         menuMore = findViewById(R.id.button_main_menu);
+         menuMore.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 PopupMenu popup = new PopupMenu(MainActivity.this, v, Gravity.END);
+                 popup.getMenuInflater().inflate(R.menu.menu_main, popup.getMenu());
+                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                     @Override
+                     public boolean onMenuItemClick(MenuItem item) {
+                         int id = item.getItemId();
+
+                         if (id == R.id.action_sound) {
+                             Sounds.showSoundDialog(MainActivity.this);
+                         }
+                         return true;
+                     }
+                 });
+                 popup.show();
+             }
+         });
 
 
-    }
+     }
 
-    private void setUpChronometer() {
+     private void setUpChronometer() {
         mChronometer = new Chronometer();
         mChronometer.setTimeListener(new Chronometer.TimeListener() {
             @Override
@@ -172,14 +201,14 @@ import java.util.List;
                 } else {
                     toggleUIComponents(false);
                     buttonResumePause.setImageResource(R.drawable.ic_pause);
-                    buttonRestore.setVisibility(View.GONE);
                     buttonSalvar.setVisibility(View.GONE);
+                    buttonRestore.setVisibility(View.GONE);
 
-                    if (mChronometer.hasStarted())
+                    if (mChronometer.hasStarted()) {
                         AnimationUtil.leftToRight(getBaseContext(), buttonResumePause);
-
-                    if (mChronometer.hasStarted())
                         AnimationUtil.fadeOut(getBaseContext(), buttonSalvar);
+                    }
+
 
                     mChronometer.resume();
                 }
@@ -211,7 +240,12 @@ import java.util.List;
                 dialog.show();
             }
         });
-    }
+     }
+
+     private void setUpCircularProgress() {
+         mProgress = findViewById(R.id.progress_circular_contagem_tempo);
+         mProgress.setMax(100);
+     }
 
      private void setUpHistorico() {
          // CASO FOR USAR UM DIA, TRABALHO EM PARTE RESOLVIDO
@@ -248,7 +282,7 @@ import java.util.List;
          TextView tvSemHistorico = findViewById(R.id.tv_historico_sem_historico_daimoku);
          RecyclerView rvHistorico = findViewById(R.id.rv_historico);
 
-         List<Daimoku> listaDaimoku = new Database(this).getTodosDaimoku();
+         List<Daimoku> listaDaimoku = this.database.getTodosDaimoku();
 
          if (listaDaimoku.size() > 0) {
              tvSemHistorico.setVisibility(View.GONE);
@@ -275,12 +309,13 @@ import java.util.List;
 
          buttonResumePause.setImageResource(R.drawable.ic_play);
          buttonResumePause.setEnabled(true);
+         buttonSalvar.setEnabled(true);
          AnimationUtil.leftToRight(getBaseContext(), buttonResumePause);
 
          buttonRestore.setVisibility(View.GONE);
 
          buttonSalvar.setVisibility(View.GONE);
-         AnimationUtil.fadeOut(getBaseContext(), buttonSalvar);
+         AnimationUtil.leftToRight(getBaseContext(), buttonResumePause);
 
          toggleUIComponents(true);
      }
@@ -359,10 +394,17 @@ import java.util.List;
 
     }
 
-    @Override
-    protected void onDestroy() {
-        if (mMediaPlayer != null)
-            mMediaPlayer.release();
-        super.onDestroy();
-    }
-}
+     @Override
+     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+         super.onActivityResult(requestCode, resultCode, data);
+         loadPhoto();
+         setUpMessage();
+     }
+
+     @Override
+     protected void onDestroy() {
+         if (mMediaPlayer != null)
+             mMediaPlayer.release();
+         super.onDestroy();
+     }
+ }

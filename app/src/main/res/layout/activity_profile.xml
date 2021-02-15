@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_profile_activity"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:context=".ui.ProfileActivity"
+    tools:ignore="ContentDescription">
+
+    <!--TOP NAVIGATION: BACK BUTTON, ...-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/layout_default_offset_16"
+        android:orientation="horizontal"
+        android:padding="@dimen/layout_default_offset_8">
+
+        <ImageView
+            android:id="@+id/button_action_voltar"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="@dimen/layout_default_offset_8"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@android:color/black" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Olá,"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        tools:ignore="HardcodedText" />
+
+
+    <!--IMAGEM FOTO-->
+    <FrameLayout
+        android:layout_width="192dp"
+        android:layout_height="192dp"
+        android:layout_marginVertical="64dp">
+
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:id="@+id/iv_perfil_foto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_user_profile"
+            app:civ_border="false"
+            app:civ_circle_color="@android:color/transparent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_editar_foto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="@dimen/layout_default_offset_4"
+            android:backgroundTint="@color/colorYellow"
+            android:src="@drawable/ic_photo_camera"
+            app:tint="@android:color/white" />
+
+    </FrameLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_nome_perfil"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:endIconDrawable="@drawable/ic_edit"
+        app:endIconMode="custom"
+        app:startIconDrawable="@drawable/ic_person"
+        tools:ignore="HardcodedText">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_perfil_nome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@android:color/transparent"
+            android:hint="Nome"
+            android:imeOptions="actionDone"
+            android:inputType="none"
+            android:maxLength="18"
+            android:maxLines="1"
+            android:text="Matheus Baltazar" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+</LinearLayout>

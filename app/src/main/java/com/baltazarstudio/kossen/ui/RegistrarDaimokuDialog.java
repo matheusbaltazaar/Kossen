@@ -24,23 +24,23 @@ public class RegistrarDaimokuDialog extends Dialog {
 
     private OnSavedDaimokuListener mListener;
 
-    public RegistrarDaimokuDialog(Context context, final String clockTime) {
+    public RegistrarDaimokuDialog(Context context, final String duration) {
         super(context);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         if (getWindow() != null)
             getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
 
-        setUpView(clockTime);
+        setUpView(duration);
         setUpDimensions();
     }
 
     @SuppressLint("SimpleDateFormat")
-    private void setUpView(final String clockTime) {
+    private void setUpView(final String duration) {
         setContentView(R.layout.dialog_registrar_daimoku);
 
         final TextView tvDuracaoDaimoku = findViewById(R.id.tv_dialog_registrar_daimoku_duracao);
-        tvDuracaoDaimoku.setText(clockTime);
+        tvDuracaoDaimoku.setText(duration);
 
         final EditText etInformacoes = findViewById(R.id.et_dialog_registrar_daimoku_informacoes);
 
@@ -54,10 +54,9 @@ public class RegistrarDaimokuDialog extends Dialog {
                     @Override
                     public void onClick(View view) {
 
-
                         Daimoku daimoku = new Daimoku();
                         daimoku.setData(timeInMillis);
-                        daimoku.setDuracao(clockTime);
+                        daimoku.setDuracao(duration);
                         daimoku.setInformacao(etInformacoes.getText().toString());
 
                         new Database(getContext()).registrarDaimoku(daimoku);

@@ -4,9 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="horizontal"
-    android:weightSum="1"
     tools:context=".ui.MainActivity"
     tools:ignore="ContentDescription">
 
@@ -14,19 +11,20 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:ignore="HardcodedText">
 
         <FrameLayout
             android:id="@+id/layout_coordinator_reference_up"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2">
+            android:layout_weight="2.5">
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
-                android:src="@drawable/image_main_activity_background" />
+                android:src="@drawable/background_main_activity" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -41,15 +39,16 @@
                     android:padding="@dimen/layout_default_offset_8">
 
                     <com.mikhaellopez.circularimageview.CircularImageView
-                        android:id="@+id/iv_user_profile_image"
+                        android:id="@+id/iv_icon_user_profile"
                         android:layout_width="36dp"
                         android:layout_height="36dp"
                         android:background="?attr/selectableItemBackground"
                         android:clickable="true"
                         android:focusable="true"
-                        android:src="@drawable/ic_user_profile_placeholder"
+                        android:src="@drawable/ic_user_profile"
                         app:civ_border="false"
-                        app:civ_circle_color="@android:color/transparent" />
+                        app:civ_circle_color="@android:color/transparent"
+                        app:tint="@android:color/white" />
 
                     <View
                         android:layout_width="0dp"
@@ -57,24 +56,25 @@
                         android:layout_weight="1" />
 
                     <ImageView
-                        android:id="@+id/button_menu"
+                        android:id="@+id/button_main_menu"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="?attr/selectableItemBackground"
                         android:clickable="true"
                         android:focusable="true"
                         android:padding="@dimen/layout_default_offset_8"
-                        android:src="@drawable/ic_more_vertical"
-                        app:tint="?colorControlHighlight" />
+                        android:src="@drawable/ic_more_vertical" />
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/tv_messagem_praticante"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/layout_default_offset_8"
-                    android:text="Olá, praticante! Vamos fazer daimoku?"
                     android:textAlignment="center"
-                    android:textSize="@dimen/text_size_18" />
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/text_size_18"
+                    tools:text="Olá, praticante! Vamos fazer daimoku?" />
 
                 <RelativeLayout
                     android:layout_width="192dp"
@@ -136,7 +136,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1">
 
-                    <Button
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/button_salvar_daimoku"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="192dp"
@@ -144,7 +144,9 @@
                         android:layout_gravity="center"
                         android:layout_marginBottom="@dimen/layout_default_offset_16"
                         android:text="Salvar"
+                        android:textColor="@android:color/white"
                         android:visibility="gone"
+                        app:strokeColor="@color/colorAccent"
                         tools:visibility="visible" />
                 </FrameLayout>
             </LinearLayout>
@@ -182,7 +184,6 @@
                 android:id="@+id/rv_historico"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="@dimen/layout_default_offset_8"
                 tools:itemCount="3"
                 tools:listitem="@layout/item_historico_daimoku" />
         </LinearLayout>

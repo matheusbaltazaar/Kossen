@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/layout_default_offset_8"
     android:orientation="vertical"
-    android:paddingTop="@dimen/layout_default_offset_4">
+    android:paddingTop="@dimen/layout_default_offset_4"
+    tools:ignore="ContentDescription">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,7 +41,8 @@
             android:layout_margin="@dimen/layout_default_offset_4"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="@dimen/layout_default_offset_8"
-            android:src="@drawable/ic_info" />
+            android:src="@drawable/ic_info"
+            app:tint="@android:color/holo_blue_light" />
 
         <ImageView
             android:id="@+id/button_item_historico_daimoku_remover"
@@ -47,7 +51,8 @@
             android:layout_margin="@dimen/layout_default_offset_4"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="@dimen/layout_default_offset_8"
-            android:src="@drawable/ic_remove" />
+            android:src="@drawable/ic_remove"
+            app:tint="@android:color/holo_blue_light" />
 
     </LinearLayout>
 
@@ -67,6 +72,6 @@
         android:id="@+id/divider_item_historico_daimoku"
         android:layout_width="match_parent"
         android:layout_height="1.5dp"
-        android:background="?colorControlHighlight" />
+        android:background="@color/off_white" />
 
 </LinearLayout>

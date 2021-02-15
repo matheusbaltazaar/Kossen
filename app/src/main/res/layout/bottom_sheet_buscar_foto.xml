@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="@dimen/layout_default_offset_8"
+    app:cardElevation="@dimen/layout_default_offset_8"
+    tools:ignore="HardcodedText">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/button_bottom_sheet_buscar_foto_alterar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:drawablePadding="@dimen/layout_default_offset_16"
+            android:focusable="true"
+            android:padding="@dimen/layout_default_offset_16"
+            android:text="Alterar Foto"
+            android:textSize="@dimen/text_size_16"
+            app:drawableStartCompat="@drawable/ic_edit"
+            app:drawableTint="@color/colorAccent" />
+
+        <TextView
+            android:id="@+id/button_bottom_sheet_buscar_foto_remover"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:drawablePadding="@dimen/layout_default_offset_16"
+            android:focusable="true"
+            android:padding="@dimen/layout_default_offset_16"
+            android:text="Remover Foto"
+            android:textSize="@dimen/text_size_16"
+            app:drawableStartCompat="@drawable/ic_remove"
+            app:drawableTint="@color/colorAccent" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

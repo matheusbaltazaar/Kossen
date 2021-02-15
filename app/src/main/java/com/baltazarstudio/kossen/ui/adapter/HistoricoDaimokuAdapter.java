@@ -22,11 +22,13 @@ import java.util.List;
 
 public class HistoricoDaimokuAdapter extends RecyclerView.Adapter<HistoricoDaimokuAdapter.ItemViewHolder> {
 
+    private final Context context;
     private final LayoutInflater inflater;
     private final List<Daimoku> listaDaimoku;
     private final RecyclerView.LayoutManager layoutManager;
 
     public HistoricoDaimokuAdapter(Context context, List<Daimoku> daimokuList, RecyclerView.LayoutManager layoutManager) {
+        this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.listaDaimoku = daimokuList;
         this.layoutManager = layoutManager;
@@ -51,17 +53,21 @@ public class HistoricoDaimokuAdapter extends RecyclerView.Adapter<HistoricoDaimo
         holder.textViewData.setText(Utils.getFormattedDate(daimoku.getData()));
         holder.textViewInformacao.setText(daimoku.getInformacao());
 
-        holder.buttonInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (holder.textViewInformacao.getVisibility() == View.GONE) {
-                    holder.textViewInformacao.setVisibility(View.VISIBLE);
-                    layoutManager.scrollToPosition(position);
-                } else {
-                    holder.textViewInformacao.setVisibility(View.GONE);
+        if (daimoku.getInformacao() != null && !daimoku.getInformacao().isEmpty()) {
+            holder.buttonInfo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (holder.textViewInformacao.getVisibility() == View.GONE) {
+                        holder.textViewInformacao.setVisibility(View.VISIBLE);
+                        layoutManager.scrollToPosition(position);
+                    } else {
+                        holder.textViewInformacao.setVisibility(View.GONE);
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            holder.buttonInfo.setColorFilter(context.getResources().getColor(R.color.off_white));
+        }
 
         holder.buttonRemover.setOnClickListener(new View.OnClickListener() {
             @Override
