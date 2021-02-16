@@ -39,12 +39,24 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/tv_profile_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Olá,"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/tv_profile_submessage_comecar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="vamos começar?"
+        android:textAlignment="center"
+        android:textSize="@dimen/text_size_18"
+        android:visibility="gone"
+        tools:ignore="HardcodedText"
+        tools:visibility="visible" />
 
 
     <!--IMAGEM FOTO-->

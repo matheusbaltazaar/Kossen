@@ -44,7 +44,7 @@ import java.util.List;
       * - (DONE) Novo layout Contador (link no Slack)
       * - (DONE) Dados de perfil (Capturar foto, crop imagem etc)
       * - (DONE) Ícone com foto no canto esquerdo da toolbar (no drawer icon)
-      * - Tela de Apresentação
+      * - (DONE) Tela de Apresentação
       * - Ajustar sons para quando concluir a oração
       * - Fonte personalizada (Calligraphy3 ?)
       * - Tela para detalhes e filtragens do histórico daimoku
@@ -78,7 +78,6 @@ import java.util.List;
          setContentView(R.layout.activity_main);
 
          database = new Database(this);
-         AppContext.setPerfil(database.carregarPerfil());
 
          setUpProfilePhoto();
          setUpMenu();
@@ -89,6 +88,7 @@ import java.util.List;
 
          startIntroAnimations();
 
+         checkFirstUse();
      }
 
      @SuppressLint("SetTextI18n")
@@ -394,11 +394,21 @@ import java.util.List;
 
     }
 
+     private void checkFirstUse() {
+         if (AppContext.isFirstUse(this)) {
+             startActivity(new Intent(this, ProfileActivity.class));
+         }
+     }
+
      @Override
      protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
          super.onActivityResult(requestCode, resultCode, data);
          loadPhoto();
          setUpMessage();
+
+         if (AppContext.isFirstUse(this)) {
+             AppContext.assertFirstUse(this);
+         }
      }
 
      @Override

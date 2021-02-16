@@ -1,5 +1,6 @@
 package com.baltazarstudio.kossen.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,11 +10,11 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,17 +31,16 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private TextInputEditText etNome;
     private CircularImageView imageViewFoto;
 
     private final Database database = new Database(this);
     private final Perfil perfil = AppContext.getPerfil();
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +65,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        etNome = findViewById(R.id.et_perfil_nome);
+        TextInputEditText etNome = findViewById(R.id.et_perfil_nome);
         etNome.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -83,15 +83,18 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
 
-        loadData();
-    }
+        if (AppContext.isFirstUse(this)) {
+            TextView message = findViewById(R.id.tv_profile_message);
+            message.setText("Bem vindo(a),");
+            findViewById(R.id.tv_profile_submessage_comecar).setVisibility(View.VISIBLE);
 
-    private void loadData() {
-        etNome.setText(perfil.getNome());
-
-        String base64 = perfil.getArquivoFotoBase64();
-        if (base64 != null && !base64.isEmpty()) {
-            imageViewFoto.setImageBitmap(Utils.getBitmapFromBase64(base64));
+            buttonVoltar.setImageResource(R.drawable.ic_check);
+        } else {
+            etNome.setText(perfil.getNome());
+            String base64 = perfil.getArquivoFotoBase64();
+            if (base64 != null && !base64.isEmpty()) {
+                imageViewFoto.setImageBitmap(Utils.getBitmapFromBase64(base64));
+            }
         }
     }
 
@@ -125,6 +128,14 @@ public class ProfileActivity extends AppCompatActivity {
         } else {
             cropping.start(ProfileActivity.this);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (AppContext.isFirstUse(this)) {
+            return; // DO NOTHING ON BACK PRESS
+        }
+        super.onBackPressed();
     }
 
     @Override
