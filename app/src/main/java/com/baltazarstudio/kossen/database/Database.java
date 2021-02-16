@@ -129,10 +129,19 @@ public class Database extends SQLiteOpenHelper {
         String sqlRemove = "DELETE FROM " + TABELA_PERFIL;
         db.execSQL(sqlRemove);
 
-        String sqlPersist = "INSERT INTO " + TABELA_PERFIL + "(" + PERFIL_NOME + ", " + PERFIL_ARQUIVO_FOTO_BASE_64 + ")";
-        sqlPersist += " VALUES ('" + perfil.getNome() + "','" + perfil.getArquivoFotoBase64() + "')";
+        String sqlInsert = "INSERT INTO " + TABELA_PERFIL + "("
+                + PERFIL_NOME + ","
+                + PERFIL_ARQUIVO_FOTO_BASE_64
+                + ") VALUES (?, ?)";
+        SQLiteStatement insertStmt = db.compileStatement(sqlInsert);
 
-        db.execSQL(sqlPersist);
+        if (perfil.getNome() == null) insertStmt.bindNull(1);
+        else insertStmt.bindString(1, perfil.getNome());
+
+        if (perfil.getArquivoFotoBase64() == null) insertStmt.bindNull(2);
+        else insertStmt.bindString(2, perfil.getArquivoFotoBase64());
+
+        insertStmt.executeInsert();
 
         db.setTransactionSuccessful();
         db.endTransaction();

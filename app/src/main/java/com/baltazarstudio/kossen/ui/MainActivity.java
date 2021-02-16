@@ -1,6 +1,7 @@
 package com.baltazarstudio.kossen.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -37,21 +38,23 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.List;
 
- public class MainActivity extends AppCompatActivity {
+import io.github.inflationx.viewpump.ViewPumpContextWrapper;
+
+public class MainActivity extends AppCompatActivity {
 
 
-     /**
-      * - (DONE) Novo layout Contador (link no Slack)
-      * - (DONE) Dados de perfil (Capturar foto, crop imagem etc)
-      * - (DONE) Ícone com foto no canto esquerdo da toolbar (no drawer icon)
-      * - (DONE) Tela de Apresentação
-      * - Ajustar sons para quando concluir a oração
-      * - Fonte personalizada (Calligraphy3 ?)
-      * - Tela para detalhes e filtragens do histórico daimoku
-      * <p>
-      * - Refatoração: Código (Revisar todas as classes)
-      * - Migração projeto para Kotlin
-      */
+    /**
+     * - (DONE) Novo layout Contador (link no Slack)
+     * - (DONE) Dados de perfil (Capturar foto, crop imagem etc)
+     * - (DONE) Ícone com foto no canto esquerdo da toolbar (no drawer icon)
+     * - (DONE) Tela de Apresentação
+     * - Ajustar sons e mensagens para quando concluir a oração
+     * - (DONE) Fonte personalizada (Calligraphy3 ?)
+     * - Tela para detalhes e filtragens do histórico daimoku
+     * <p>
+     * - Refatoração: Código (Revisar todas as classes)
+     * - Migração projeto para Kotlin
+     */
 
 
      private TextView labelGoalTime;
@@ -78,6 +81,7 @@ import java.util.List;
          setContentView(R.layout.activity_main);
 
          database = new Database(this);
+         AppContext.setPerfil(database.carregarPerfil());
 
          setUpProfilePhoto();
          setUpMenu();
@@ -107,7 +111,7 @@ import java.util.List;
          userProfileImage.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+                 startActivityForResult(new Intent(MainActivity.this, ProfileActivity.class), 0);
              }
          });
 
@@ -115,12 +119,16 @@ import java.util.List;
      }
 
      private void loadPhoto() {
-         Perfil perfil = AppContext.getPerfil();
+         String foto = AppContext.getPerfil().getArquivoFotoBase64();
 
-         userProfileImage.setImageBitmap(Utils.getBitmapFromBase64(perfil.getArquivoFotoBase64()));
+         if (foto != null && !foto.isEmpty()) {
+             userProfileImage.setImageBitmap(Utils.getBitmapFromBase64(foto));
+         } else {
+             userProfileImage.setImageResource(R.drawable.ic_user_profile);
+         }
      }
 
-     private void setUpMenu() {
+    private void setUpMenu() {
          menuMore = findViewById(R.id.button_main_menu);
          menuMore.setOnClickListener(new View.OnClickListener() {
              @Override
@@ -396,7 +404,7 @@ import java.util.List;
 
      private void checkFirstUse() {
          if (AppContext.isFirstUse(this)) {
-             startActivity(new Intent(this, ProfileActivity.class));
+             startActivityForResult(new Intent(this, ProfileActivity.class), 0);
          }
      }
 
@@ -411,10 +419,15 @@ import java.util.List;
          }
      }
 
-     @Override
-     protected void onDestroy() {
-         if (mMediaPlayer != null)
-             mMediaPlayer.release();
-         super.onDestroy();
-     }
+    @Override
+    protected void onDestroy() {
+        if (mMediaPlayer != null)
+            mMediaPlayer.release();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase));
+    }
  }

@@ -22,13 +22,13 @@ public class AppContext {
     }
 
     public static boolean isFirstUse(Context context) {
-        if (mPrefs != null)
+        if (mPrefs == null)
             mPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         return mPrefs.getBoolean(PREFS_FIRST_USE, true);
     }
 
     public static void assertFirstUse(Context context) {
-        if (mPrefs != null)
+        if (mPrefs == null)
             mPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         mPrefs.edit().putBoolean(PREFS_FIRST_USE, false).apply();
     }

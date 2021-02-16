@@ -103,8 +103,7 @@
             android:imeOptions="actionDone"
             android:inputType="none"
             android:maxLength="18"
-            android:maxLines="1"
-            android:text="Matheus Baltazar" />
+            android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

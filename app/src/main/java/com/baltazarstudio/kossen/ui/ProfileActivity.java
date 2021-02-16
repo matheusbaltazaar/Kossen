@@ -33,6 +33,8 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.IOException;
 
+import io.github.inflationx.viewpump.ViewPumpContextWrapper;
+
 public class ProfileActivity extends AppCompatActivity {
 
     private CircularImageView imageViewFoto;
@@ -86,6 +88,7 @@ public class ProfileActivity extends AppCompatActivity {
         if (AppContext.isFirstUse(this)) {
             TextView message = findViewById(R.id.tv_profile_message);
             message.setText("Bem vindo(a),");
+
             findViewById(R.id.tv_profile_submessage_comecar).setVisibility(View.VISIBLE);
 
             buttonVoltar.setImageResource(R.drawable.ic_check);
@@ -180,5 +183,10 @@ public class ProfileActivity extends AppCompatActivity {
             }
         }
         return super.dispatchTouchEvent(event);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase));
     }
 }
