@@ -28,6 +28,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -95,13 +96,19 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void buscarFotoGaleria() {
+        final CropImage.ActivityBuilder cropping = CropImage.activity()
+                .setAllowFlipping(false)
+                .setAllowRotation(false)
+                .setAspectRatio(1, 1)
+                .setCropShape(CropImageView.CropShape.OVAL);
+
         if (perfil.getArquivoFotoBase64() != null && !perfil.getArquivoFotoBase64().isEmpty()) {
             final BottomSheetDialog dialog = new BottomSheetDialog(this);
             dialog.setContentView(R.layout.bottom_sheet_buscar_foto);
             dialog.findViewById(R.id.button_bottom_sheet_buscar_foto_alterar).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    CropImage.activity().start(ProfileActivity.this);
+                    cropping.start(ProfileActivity.this);
                     dialog.cancel();
                 }
             });
@@ -116,7 +123,7 @@ public class ProfileActivity extends AppCompatActivity {
             });
             dialog.show();
         } else {
-            CropImage.activity().start(this);
+            cropping.start(ProfileActivity.this);
         }
     }
 

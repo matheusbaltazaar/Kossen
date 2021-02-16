@@ -35,7 +35,7 @@ public class Utils {
 
     public static String getBase64FromBitmap(Bitmap bitmap) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, bytes);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         return Base64.encodeToString(bytes.toByteArray(), Base64.DEFAULT);
     }
 }
