@@ -28,7 +28,6 @@ import com.baltazarstudio.kossen.component.TimeInputText;
 import com.baltazarstudio.kossen.context.AppContext;
 import com.baltazarstudio.kossen.database.Database;
 import com.baltazarstudio.kossen.model.Daimoku;
-import com.baltazarstudio.kossen.model.Perfil;
 import com.baltazarstudio.kossen.ui.adapter.HistoricoDaimokuAdapter;
 import com.baltazarstudio.kossen.util.AnimationUtil;
 import com.baltazarstudio.kossen.util.Sounds;
@@ -416,6 +415,7 @@ public class MainActivity extends AppCompatActivity {
 
          if (AppContext.isFirstUse(this)) {
              AppContext.assertFirstUse(this);
+             startIntroAnimations();
          }
      }
 
