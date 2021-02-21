@@ -32,4 +32,5 @@ public class AppContext {
             mPrefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         mPrefs.edit().putBoolean(PREFS_FIRST_USE, false).apply();
     }
+
 }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:ignore="RtlSymmetry,UseCompoundDrawables,ContentDescription">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingEnd="@dimen/layout_default_offset_16">
+
+        <View
+            android:id="@+id/view_item_chooser_bell_left_indicator"
+            android:layout_width="6dp"
+            android:layout_height="match_parent"
+            android:background="@color/off_primary" />
+
+        <TextView
+            android:id="@+id/tv_item_choose_bell_name"
+            android:layout_width="0dp"
+            android:layout_height="64dp"
+            android:layout_marginVertical="@dimen/layout_default_offset_4"
+            android:layout_weight="1"
+            android:checked="true"
+            android:gravity="center_vertical"
+            android:paddingVertical="@dimen/layout_default_offset_4"
+            android:paddingStart="@dimen/layout_default_offset_16"
+            android:textSize="@dimen/text_size_20"
+            android:textStyle="italic"
+            tools:text="Sino 1" />
+
+
+        <ImageView
+            android:id="@+id/iv_item_choose_bell_equalizer"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_equalizer"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider_item_choose_bell"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/off_white" />
+</LinearLayout>

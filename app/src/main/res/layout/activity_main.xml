@@ -50,9 +50,11 @@
                         app:civ_circle_color="@android:color/transparent"
                         app:tint="@android:color/white" />
 
-                    <View
+                    <ImageView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
+                        android:src="@drawable/ic_lotus_flower"
+                        android:scaleType="fitCenter"
                         android:layout_weight="1" />
 
                     <ImageView

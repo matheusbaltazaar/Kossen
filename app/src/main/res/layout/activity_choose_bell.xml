@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.bell.ChooseBellActivity"
+    tools:ignore="ContentDescription">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="240dp"
+        android:background="@color/colorPrimary"
+        android:orientation="vertical">
+
+        <!--TOP NAVIGATION: BACK BUTTON, ...-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/layout_default_offset_16"
+            android:orientation="horizontal"
+            android:padding="@dimen/layout_default_offset_8">
+
+            <ImageView
+                android:id="@+id/button_bell_action_back"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="@dimen/layout_default_offset_8"
+                android:src="@drawable/ic_arrow_back" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_lotus_flower"
+                android:scaleType="fitCenter"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/button_bell_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="@dimen/layout_default_offset_8"
+                android:src="@drawable/ic_check"
+                app:tint="@android:color/white" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_marginTop="@dimen/layout_default_offset_16"
+            android:id="@+id/tv_profile_message"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_buddhism_bell" />
+    </LinearLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_choose_bell"
+        android:layout_width="match_parent"
+        tools:listitem="@layout/item_choose_bell_sound"
+        tools:itemCount="3"
+        android:layout_height="wrap_content" />
+</LinearLayout>
